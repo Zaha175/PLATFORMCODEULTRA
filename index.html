@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KerrCode: Die Knoten unserer Realität</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        secondary: '#3F3F94',
+                        dark: {
+                            bg: '#181818',
+                            card: '#242424',
+                            text: '#E0E0E0'
+                        },
+                        light: {
+                            bg: '#FFFFFF',
+                            card: '#F4F4F8',
+                            text: '#111111'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes rotate3d {
+            0% { transform: rotate3d(1, 1, 1, 0deg); }
+            100% { transform: rotate3d(1, 1, 1, 360deg); }
+        }
+        
+        .rotate-3d {
+            animation: rotate3d 20s linear infinite;
+        }
+        
+        .kerr-orbit {
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        
+        canvas {
+            max-width: 100%;
+        }
+        
+        .universe-node {
+            transition: all 0.3s ease;
+        }
+        
+        .universe-node:hover {
+            filter: brightness(1.5);
+            transform: scale(1.1);
+        }
+        
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, #5D5CDE, #9E9DFF);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(93, 92, 222, 0.7);
+            border-radius: 4px;
+        }
+        
+        /* Dark mode adjustments */
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark {
+            color-scheme: dark;
+        }
+    </style>
+</head>
+<body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text transition-colors duration-300">
+    <!-- Check for dark mode -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/90 dark:bg-dark-bg/90 shadow-md">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-primary animate-pulse-slow flex items-center justify-center mr-3">
+                    <div class="w-6 h-6 rounded-full border-2 border-white animate-spin-slow"></div>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-gradient">KerrCode</h1>
+            </div>
+            <div class="flex flex-wrap items-center mt-2 md:mt-0">
+                <a href="#intro" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Intro</a>
+                <a href="#architektur" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Architektur</a>
+                <a href="#beweise" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Beweise</a>
+                <a href="#hack" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Hack</a>
+                <a href="#join" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Join</a>
+                <a href="#tools" class="ml-2 px-4 py-1 bg-primary text-white rounded-full text-sm hover:bg-secondary transition">Tools</a>
+                <button id="darkmode-toggle" class="ml-3 p-2 rounded-full bg-light-card dark:bg-dark-card hover:bg-light-bg/70 dark:hover:bg-dark-card/70 transition">
+                    <!-- Sun icon (shown in dark mode) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <!-- Moon icon (shown in light mode) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-20">
+        <div class="absolute inset-0 z-0" id="universe-canvas"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 text-gradient">Die Knoten unserer Realität</h2>
+                <p class="text-lg md:text-xl mb-8 bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-sm p-4 rounded-lg">
+                    Vergiss den chaotischen Kosmos. Stell dir vor: Jede Galaxie, jeder Stern – Nodes in einem gigantischen Cluster. 
+                    Das ist <span class="font-bold text-primary">KerrCode</span>.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#tools" class="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-secondary transition shadow-lg hover:shadow-xl">
+                        Simulation starten
+                    </a>
+                    <a href="#intro" class="px-6 py-3 bg-light-card dark:bg-dark-card rounded-lg font-medium hover:bg-light-bg/70 dark:hover:bg-dark-card/70 transition shadow-lg hover:shadow-xl">
+                        Mehr erfahren
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Intro Section -->
+    <section id="intro" class="py-16 bg-light-card dark:bg-dark-card">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="md:w-1/2">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-6">1. Intro: „Kein Chaos – ein Netzwerk"</h2>
+                    <div class="space-y-4">
+                        <p>„Vergiss Chaos, Bro. Galaxien, Sterne – Nodes in einem <span class="font-bold text-primary">Cluster</span>."</p>
+                        <p><span class="font-bold text-primary">KerrCode</span> sagt: Kerr-Löcher sind rotierende Sim-Knoten. Ursprung? Vielleicht da, wo der Spin began. Scroll und hack die Matrix!</p>
+                        <p class="mt-6 text-sm bg-light-bg dark:bg-dark-bg p-4 rounded-lg">
+                            <span class="font-bold">Was sind Kerr-Schwarze Löcher?</span><br>
+                            Im Gegensatz zu statischen Schwarzen Löchern (Schwarzschild) rotieren Kerr-Löcher. Sie haben eine
+                            <span class="text-primary">Ergosphäre</span>, wo Raumzeit mitgerissen wird (Frame-Dragging), und eine
+                            <span class="text-primary">Ring-Singularität</span>, die exotische Effekte wie Zeitschleifen ermöglicht.
+                        </p>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative w-64 h-64 md:w-80 md:h-80">
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full animate-pulse-slow"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="kerr-black-hole relative w-40 h-40">
+                                <div class="absolute inset-0 rounded-full bg-black shadow-[0_0_60px_rgba(93,92,222,0.7)]"></div>
+                                <div class="absolute inset-2 rounded-full border-4 border-primary/50 animate-spin-slow" style="border-style: dashed;"></div>
+                                <div class="absolute inset-8 rounded-full border-2 border-orange-500/70 animate-spin-slow" style="animation-duration: 12s;"></div>
+                                <div class="absolute w-1 h-1 bg-white rounded-full top-1/2 left-1/2 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architektur" class="py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl md:text-3xl font-bold mb-10 text-center">2. Architektur: Kerr-Knoten entschlüsselt</h2>
+            <p class="text-lg text-center mb-12">„<span class="text-primary">Kerr-Löcher</span> drehen Raumzeit – Fakt. Als <span class="text-primary">Knoten</span>? Check:"</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Zeit-Cache Card -->
+                <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="flex justify-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Zeit-Cache</h3>
+                    <p>Daten .zipped – Info bleibt. Kosmischer RAM?</p>
+                    <p class="mt-4 text-sm text-light-text/70 dark:text-dark-text/70">Wenn Materie reinfällt, wird sie komprimiert. Information bleibt laut dem holografischen Prinzip erhalten.</p>
+                </div>
+                
+                <!-- Fehlerkorrektur Card -->
+                <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="flex justify-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Fehlerkorrektur</h3>
+                    <p>CTCs fixen Bugs – Physik sagt ja. Code-Loop?</p>
+                    <p class="mt-4 text-sm text-light-text/70 dark:text-dark-text/70">CTCs (geschlossene zeitartige Kurven) sind mathematisch möglich im Cauchy-Horizont. Schleifen könnten Instabilitäten im 'Code' fixen.</p>
+                </div>
+                
+                <!-- API Card -->
+                <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="flex justify-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-center">API</h3>
+                    <p>Ring-Singularität linked Raumzeiten. Sub-Sim-Spawner?</p>
+                    <p class="mt-4 text-sm text-light-text/70 dark:text-dark-text/70">Die Ring-Singularität ist kein Punkt, sondern ein Tor. Sie könnte theoretisch Raumzeiten verbinden, ein 5D-Gateway zur 'Meta-Instanz'.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Evidence Section -->
+    <section id="beweise" class="py-16 bg-light-card dark:bg-dark-card">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">3. Beweise: Spin & Sub-Sims</h2>
+            <p class="text-lg text-center mb-12">„Hints, Bro:"</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- JWST Rotation Evidence -->
+                <div class="relative">
+                    <div class="evidence-card bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg overflow-hidden transition hover:shadow-xl transform hover:-translate-y-1">
+                        <div class="absolute top-0 right-0 w-20 h-20">
+                            <div class="absolute top-6 right-6 w-8 h-8 rounded-full bg-primary animate-spin-slow opacity-70"></div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">JWST-Rotation</h3>
+                            <p class="mb-4">66% clockwise – JWST. Takt zum Ursprung?</p>
+                            <div class="mt-4 h-40 flex items-center justify-center" id="galaxy-rotation-chart">
+                                <canvas id="rotationChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hawking Radiation Evidence -->
+                <div class="relative">
+                    <div class="evidence-card bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg overflow-hidden transition hover:shadow-xl transform hover:-translate-y-1">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">Hawking-Strahlung</h3>
+                            <p class="mb-4">Info entkommt. Sub-Sim-Logs?</p>
+                            <div class="mt-4 h-40 flex items-center justify-center relative">
+                                <div class="w-20 h-20 bg-black rounded-full shadow-[0_0_30px_rgba(93,92,222,0.5)]"></div>
+                                <div class="absolute inset-0 hawking-radiation flex items-center justify-center">
+                                    <!-- Animated radiation particles -->
+                                    <div id="hawking-animation"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CTCs Evidence -->
+                <div class="relative">
+                    <div class="evidence-card bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg overflow-hidden transition hover:shadow-xl transform hover:-translate-y-1">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">CTCs</h3>
+                            <p class="mb-4">Zeitschleifen möglich. Reset oder Fork?</p>
+                            <div class="mt-4 h-40 flex items-center justify-center">
+                                <div class="relative w-32 h-32">
+                                    <div class="absolute w-full h-full border-4 border-primary rounded-full animate-spin-slow opacity-50"></div>
+                                    <div class="absolute w-full h-full border-4 border-secondary rounded-full animate-spin-slow opacity-50" style="animation-direction: reverse; animation-duration: 10s;"></div>
+                                    <div class="absolute w-6 h-6 bg-primary rounded-full shadow-lg" id="timeloop-dot" style="top: 0; left: 50%; transform: translateX(-50%);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hack Section -->
+    <section id="hack" class="py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">4. Hack: Ursprung & Nested Sims</h2>
+            <p class="text-lg text-center mb-10">„Code brechen, Bro:"</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                        Rotation tracken
+                    </h3>
+                    <p>Spin zeigt den Start – Vektorfeld sagt wo. Master-Node?</p>
+                    <div class="mt-6 relative h-36 overflow-hidden rounded-lg bg-light-bg/50 dark:bg-dark-bg/50 flex items-center justify-center">
+                        <div id="vector-field" class="w-full h-full"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                        Kerr-Spawner
+                    </h3>
+                    <p>Singularität forkelt Sub-Sims – Physik erlaubt's. Fraktal-Matrix?</p>
+                    <div class="mt-6 relative h-36 overflow-hidden rounded-lg bg-light-bg/50 dark:bg-dark-bg/50 flex items-center justify-center">
+                        <div id="kerr-spawner-visual" class="w-full h-full"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                        Sim-in-Sim
+                    </h3>
+                    <p>Wir simulieren Kerrs – Spiegelzeit. Debug-Level up?</p>
+                    <div class="mt-6 relative h-36 overflow-hidden rounded-lg bg-light-bg/50 dark:bg-dark-bg/50 flex items-center justify-center">
+                        <div id="sim-in-sim-visual" class="w-full h-full flex items-center justify-center">
+                            <div class="recursive-container w-24 h-24 relative">
+                                <!-- Recursive visualization goes here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Join Section -->
+    <section id="join" class="py-16 bg-light-card dark:bg-dark-card">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">5. Join: „Hack den Kosmos"</h2>
+            <p class="text-lg text-center mb-10">„Jetzt, Bros:"</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg text-center">
+                    <div class="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Scan</h3>
+                    <p class="mb-4">Spin für Ursprung finden.</p>
+                    <a href="#tools" class="inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition">Get Fourier Tool</a>
+                </div>
+                
+                <div class="p-6 bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg text-center">
+                    <div class="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Sim</h3>
+                    <p class="mb-4">Sub-Sims in Kerrs testen.</p>
+                    <a href="#tools" class="inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition">Simulate Now</a>
+                </div>
+                
+                <div class="p-6 bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg text-center">
+                    <div class="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Hack</h3>
+                    <p class="mb-4">Wellen & Quanten nutzen.</p>
+                    <button id="contact-btn" class="inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition">Mail Us</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl md:text-3xl font-bold mb-10 text-center">KerrCode-Control-Panel</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <!-- Simulation Panel -->
+                <div class="bg-light-card dark:bg-dark-card rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-6">Simulation Parameters</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block mb-2 font-medium">
+                                Spin (-1 = Counterclockwise, 1 = Clockwise):
+                            </label>
+                            <input type="range" min="-1" max="1" step="0.1" value="0.5" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer" id="spin-input">
+                            <div class="flex justify-between text-sm mt-1">
+                                <span>-1</span>
+                                <span id="spin-value">0.5</span>
+                                <span>1</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-medium">
+                                Lichtgeschwindigkeit (c, m/s):
+                            </label>
+                            <input type="number" value="299792458" class="w-full px-4 py-2 text-base rounded-lg bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-700" id="light-speed-input">
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-medium">
+                                Gravitationskonstante (G, x10^-11):
+                            </label>
+                            <input type="number" value="6.67430" step="0.00001" class="w-full px-4 py-2 text-base rounded-lg bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-700" id="gravity-input">
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <button id="spawn-sim-btn" class="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Spawn Sub-Sim
+                            </button>
+                            <button id="fourier-tool-btn" class="flex-1 px-4 py-3 bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text border border-primary rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                Get Fourier Tool
+                            </button>
+                        </div>
+                        
+                        <button id="universe-tree-btn" class="w-full px-4 py-3 bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text border border-primary rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Show Universen-Baum
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Visualization Panel -->
+                <div class="bg-light-card dark:bg-dark-card rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4">Visualization</h3>
+                    <div class="relative" style="height: 400px;">
+                        <!-- The content here will change based on active tool -->
+                        <div id="visualization-container" class="absolute inset-0 bg-light-bg/50 dark:bg-dark-bg/50 rounded-lg flex items-center justify-center">
+                            <div id="kerr-3d-container" class="w-full h-full"></div>
+                            <div id="fourier-container" class="w-full h-full hidden">
+                                <canvas id="fourierCanvas"></canvas>
+                            </div>
+                            <div id="universe-tree-container" class="w-full h-full hidden">
+                                <!-- Universe tree visualization will be added here -->
+                            </div>
+                            <div id="visualization-placeholder" class="text-center p-6">
+                                <div class="text-7xl mb-4 opacity-20">⚫</div>
+                                <p class="text-light-text/50 dark:text-dark-text/50">Select a tool to visualize</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div id="visualization-info" class="bg-light-bg dark:bg-dark-bg p-4 rounded-lg text-sm">
+                            <p class="font-medium">Status:</p>
+                            <p id="status-text">Ready to simulate. Adjust parameters and select a tool.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div class="bg-light-bg dark:bg-dark-bg rounded-xl shadow-xl p-6 w-full max-w-lg mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Mail Us</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium">Name</label>
+                    <input type="text" class="w-full px-4 py-2 text-base rounded-lg bg-light-card dark:bg-dark-card border border-gray-300 dark:border-gray-700" placeholder="Your name">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium">Email</label>
+                    <input type="email" class="w-full px-4 py-2 text-base rounded-lg bg-light-card dark:bg-dark-card border border-gray-300 dark:border-gray-700" placeholder="your.email@example.com">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium">Message</label>
+                    <textarea class="w-full px-4 py-2 text-base rounded-lg bg-light-card dark:bg-dark-card border border-gray-300 dark:border-gray-700 min-h-[100px]" placeholder="Your message about KerrCode..."></textarea>
+                </div>
+                <button id="send-message" class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition">Send Message</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Universe Canvas Background
+        function initUniverseCanvas() {
+            const canvas = document.createElement('canvas');
+            document.getElementById('universe-canvas').appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const bgColor = isDarkMode ? '#181818' : '#ffffff';
+            const nodeColor = '#5D5CDE';
+            
+            // Draw nodes and connections
+            const nodes = [];
+            const numNodes = Math.floor(window.innerWidth * window.innerHeight / 15000);
+            
+            for (let i = 0; i < numNodes; i++) {
+                nodes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    speed: Math.random() * 0.2 + 0.1,
+                    angle: Math.random() * Math.PI * 2,
+                    opacity: Math.random() * 0.5 + 0.1
+                });
+            }
+            
+            function drawNodes() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < nodes.length; i++) {
+                    const node = nodes[i];
+                    
+                    // Update position
+                    node.x += Math.cos(node.angle) * node.speed;
+                    node.y += Math.sin(node.angle) * node.speed;
+                    
+                    // Bounce off edges
+                    if (node.x < 0 || node.x > canvas.width) node.angle = Math.PI - node.angle;
+                    if (node.y < 0 || node.y > canvas.height) node.angle = -node.angle;
+                    
+                    // Draw node
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = nodeColor;
+                    ctx.globalAlpha = node.opacity;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                    
+                    // Draw connections
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const otherNode = nodes[j];
+                        const dx = otherNode.x - node.x;
+                        const dy = otherNode.y - node.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(node.x, node.y);
+                            ctx.lineTo(otherNode.x, otherNode.y);
+                            ctx.strokeStyle = nodeColor;
+                            ctx.globalAlpha = (1 - distance / 150) * 0.2;
+                            ctx.stroke();
+                            ctx.globalAlpha = 1;
+                        }
+                    }
+                }
+                
+                requestAnimationFrame(drawNodes);
+            }
+            
+            drawNodes();
+            
+            // Adjust on window resize
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // Initialize the rotation chart
+        function initRotationChart() {
+            const ctx = document.getElementById('rotationChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Clockwise', 'Counterclockwise'],
+                    datasets: [{
+                        data: [66, 34],
+                        backgroundColor: [
+                            '#5D5CDE',
+                            '#3F3F94'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Hawking Radiation animation
+        function initHawkingAnimation() {
+            const container = document.getElementById('hawking-animation');
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'absolute w-2 h-2 rounded-full bg-white opacity-0';
+                
+                // Randomize position around the circle
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 10 + Math.random() * 5;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                particle.style.left = `calc(50% + ${x}px)`;
+                particle.style.top = `calc(50% + ${y}px)`;
+                
+                // Randomize animation
+                const duration = 1 + Math.random() * 2;
+                const delay = Math.random() * 3;
+                const finalX = x * (5 + Math.random() * 5);
+                const finalY = y * (5 + Math.random() * 5);
+                
+                particle.style.animation = `fadeInOut ${duration}s ease-out ${delay}s infinite`;
+                particle.style.transform = `translate(${finalX}px, ${finalY}px)`;
+                
+                container.appendChild(particle);
+            }
+            
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translate(0, 0); }
+                    20% { opacity: 0.8; }
+                    100% { opacity: 0; transform: translate(var(--tx, 50px), var(--ty, 50px)); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Initialize CTC animation
+        function initCTCAnimation() {
+            const dot = document.getElementById('timeloop-dot');
+            let angle = 0;
+            const radius = 64;
+            const center = { x: radius, y: radius };
+            const speed = 0.03;
+            
+            function animateDot() {
+                angle += speed;
+                const x = center.x + Math.cos(angle) * radius;
+                const y = center.y + Math.sin(angle) * radius;
+                dot.style.left = `${x}px`;
+                dot.style.top = `${y}px`;
+                
+                requestAnimationFrame(animateDot);
+            }
+            
+            animateDot();
+        }
+
+        // Initialize 3D Kerr black hole
+        function initKerr3D() {
+            const container = document.getElementById('kerr-3d-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            // Create scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            camera.position.z = 5;
+            
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            container.appendChild(renderer.domElement);
+            
+            // Black hole
+            const blackHoleGeometry = new THREE.SphereGeometry(1, 32, 32);
+            const blackHoleMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const blackHole = new THREE.Mesh(blackHoleGeometry, blackHoleMaterial);
+            scene.add(blackHole);
+            
+            // Ergosphere
+            const ergosphereGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+            const ergosphereMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x5D5CDE, 
+                transparent: true, 
+                opacity: 0.2,
+                wireframe: true
+            });
+            const ergosphere = new THREE.Mesh(ergosphereGeometry, ergosphereMaterial);
+            scene.add(ergosphere);
+            
+            // Ring singularity
+            const ringGeometry = new THREE.TorusGeometry(0.7, 0.05, 16, 100);
+            const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xFF5722 });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.rotation.x = Math.PI / 2;
+            scene.add(ring);
+            
+            // Accretion disk
+            const diskGeometry = new THREE.RingGeometry(1.2, 3, 64);
+            const diskMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xFFAB00, 
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.5
+            });
+            const disk = new THREE.Mesh(diskGeometry, diskMaterial);
+            disk.rotation.x = Math.PI / 2;
+            scene.add(disk);
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                blackHole.rotation.y += 0.01;
+                ergosphere.rotation.y += 0.005;
+                ring.rotation.z += 0.02;
+                disk.rotation.z += 0.005;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle resize
+            window.addEventListener('resize', () => {
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            });
+            
+            return {
+                scene, camera, renderer, blackHole, ergosphere, ring, disk,
+                updateSpin: function(spin) {
+                    const spinSpeed = spin * 0.02;
+                    ring.rotation.z += spinSpeed;
+                    disk.rotation.z += spinSpeed / 4;
+                    ergosphere.rotation.y += spinSpeed / 2;
+                }
+            };
+        }
+
+        // Initialize Vector Field
+        function initVectorField() {
+            const container = document.getElementById('vector-field');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const arrows = [];
+            
+            // Create arrows
+            for (let x = 20; x < width; x += 40) {
+                for (let y = 20; y < height; y += 40) {
+                    arrows.push({
+                        x, y,
+                        angle: Math.atan2(y - height/2, x - width/2),
+                        length: Math.min(10, Math.sqrt(Math.pow(x - width/2, 2) + Math.pow(y - height/2, 2)) / 10),
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            
+            function drawVectorField() {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Draw center point
+                ctx.beginPath();
+                ctx.arc(width/2, height/2, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#5D5CDE';
+                ctx.fill();
+                
+                // Draw vectors
+                ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111';
+                ctx.lineWidth = 1;
+                
+                for (const arrow of arrows) {
+                    const length = arrow.length * (1 + 0.3 * Math.sin(performance.now() / 1000 + arrow.phase));
+                    const x2 = arrow.x + Math.cos(arrow.angle) * length;
+                    const y2 = arrow.y + Math.sin(arrow.angle) * length;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(arrow.x, arrow.y);
+                    ctx.lineTo(x2, y2);
+                    
+                    // Arrow head
+                    const headAngle1 = arrow.angle - Math.PI * 0.8;
+                    const headAngle2 = arrow.angle + Math.PI * 0.8;
+                    const headLength = 3;
+                    
+                    ctx.lineTo(
+                        x2 + Math.cos(headAngle1) * headLength,
+                        y2 + Math.sin(headAngle1) * headLength
+                    );
+                    ctx.moveTo(x2, y2);
+                    ctx.lineTo(
+                        x2 + Math.cos(headAngle2) * headLength,
+                        y2 + Math.sin(headAngle2) * headLength
+                    );
+                    
+                    ctx.stroke();
+                }
+                
+                requestAnimationFrame(drawVectorField);
+            }
+            
+            drawVectorField();
+        }
+
+        // Initialize Kerr Spawner visualization
+        function initKerrSpawner() {
+            const container = document.getElementById('kerr-spawner-visual');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const mainBlackHole = {
+                x: width / 2,
+                y: height / 2,
+                radius: 15,
+                spin: 0
+            };
+            
+            const subSims = [];
+            
+            function spawnSubSim() {
+                if (subSims.length < 5) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 30 + Math.random() * 20;
+                    
+                    subSims.push({
+                        x: mainBlackHole.x + Math.cos(angle) * distance,
+                        y: mainBlackHole.y + Math.sin(angle) * distance,
+                        radius: 5 + Math.random() * 5,
+                        angle: angle,
+                        distance: distance,
+                        orbitSpeed: 0.01 + Math.random() * 0.02,
+                        spin: Math.random() * 2 - 1
+                    });
+                }
+            }
+            
+            // Initial spawns
+            spawnSubSim();
+            spawnSubSim();
+            
+            function drawKerrSpawner() {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Draw connections
+                ctx.strokeStyle = '#5D5CDE';
+                ctx.lineWidth = 1;
+                
+                for (const subSim of subSims) {
+                    ctx.beginPath();
+                    ctx.moveTo(mainBlackHole.x, mainBlackHole.y);
+                    ctx.lineTo(subSim.x, subSim.y);
+                    ctx.globalAlpha = 0.3;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+                
+                // Draw main black hole
+                ctx.beginPath();
+                ctx.arc(mainBlackHole.x, mainBlackHole.y, mainBlackHole.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#000000';
+                ctx.fill();
+                ctx.strokeStyle = '#5D5CDE';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw ring
+                ctx.beginPath();
+                ctx.arc(mainBlackHole.x, mainBlackHole.y, mainBlackHole.radius * 1.3, 0, Math.PI * 2);
+                ctx.strokeStyle = '#FF5722';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Update and draw sub sims
+                for (let i = 0; i < subSims.length; i++) {
+                    const subSim = subSims[i];
+                    
+                    // Update position
+                    subSim.angle += subSim.orbitSpeed;
+                    subSim.x = mainBlackHole.x + Math.cos(subSim.angle) * subSim.distance;
+                    subSim.y = mainBlackHole.y + Math.sin(subSim.angle) * subSim.distance;
+                    
+                    // Draw sub sim
+                    ctx.beginPath();
+                    ctx.arc(subSim.x, subSim.y, subSim.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#000000';
+                    ctx.fill();
+                    ctx.strokeStyle = '#3F3F94';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // Draw spin indicator
+                    const spinRadius = subSim.radius * 1.3;
+                    ctx.beginPath();
+                    ctx.arc(subSim.x, subSim.y, spinRadius, 0, Math.PI * 2);
+                    ctx.strokeStyle = subSim.spin > 0 ? '#5D5CDE' : '#9E9DFF';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // Draw arrow to indicate spin direction
+                    const arrowStart = subSim.spin > 0 ? 0 : Math.PI;
+                    const arrowEnd = subSim.spin > 0 ? Math.PI / 2 : 3 * Math.PI / 2;
+                    
+                    ctx.beginPath();
+                    ctx.arc(subSim.x, subSim.y, spinRadius, arrowStart, arrowEnd);
+                    ctx.strokeStyle = subSim.spin > 0 ? '#5D5CDE' : '#9E9DFF';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Arrow head
+                    const headX = subSim.x + Math.cos(arrowEnd) * spinRadius;
+                    const headY = subSim.y + Math.sin(arrowEnd) * spinRadius;
+                    const headAngle1 = arrowEnd - Math.PI * 0.8;
+                    const headAngle2 = arrowEnd + Math.PI * 0.8;
+                    const headLength = 3;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(headX, headY);
+                    ctx.lineTo(
+                        headX + Math.cos(headAngle1) * headLength,
+                        headY + Math.sin(headAngle1) * headLength
+                    );
+                    ctx.moveTo(headX, headY);
+                    ctx.lineTo(
+                        headX + Math.cos(headAngle2) * headLength,
+                        headY + Math.sin(headAngle2) * headLength
+                    );
+                    ctx.stroke();
+                }
+                
+                requestAnimationFrame(drawKerrSpawner);
+            }
+            
+            drawKerrSpawner();
+            
+            return {
+                spawnSubSim: spawnSubSim
+            };
+        }
+
+        // Initialize Sim-in-Sim
+        function initSimInSim() {
+            const container = document.querySelector('.recursive-container');
+            const maxDepth = 3;
+            
+            function createRecursiveCircle(depth = 0, parent = container) {
+                if (depth >= maxDepth) return;
+                
+                const circle = document.createElement('div');
+                const size = parent.clientWidth * 0.7;
+                
+                circle.style.width = `${size}px`;
+                circle.style.height = `${size}px`;
+                circle.style.position = 'absolute';
+                circle.style.top = '50%';
+                circle.style.left = '50%';
+                circle.style.transform = 'translate(-50%, -50%)';
+                circle.style.borderRadius = '50%';
+                circle.style.border = '2px solid #5D5CDE';
+                circle.style.boxSizing = 'border-box';
+                circle.style.animation = `spin ${8 + depth * 4}s linear infinite${depth % 2 === 0 ? '' : ' reverse'}`;
+                
+                // Add a singularity dot
+                const dot = document.createElement('div');
+                dot.style.position = 'absolute';
+                dot.style.width = '4px';
+                dot.style.height = '4px';
+                dot.style.borderRadius = '50%';
+                dot.style.backgroundColor = '#FF5722';
+                dot.style.top = '0';
+                dot.style.left = '50%';
+                dot.style.transform = 'translateX(-50%)';
+                
+                circle.appendChild(dot);
+                parent.appendChild(circle);
+                
+                createRecursiveCircle(depth + 1, circle);
+            }
+            
+            createRecursiveCircle();
+        }
+
+        // Initialize Fourier Tool
+        function initFourierTool() {
+            const canvas = document.getElementById('fourierCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = document.getElementById('fourier-container').clientWidth;
+            canvas.height = document.getElementById('fourier-container').clientHeight;
+            
+            const frequencies = [];
+            const numFrequencies = 5;
+            const maxAmplitude = canvas.height / 4;
+            
+            for (let i = 0; i < numFrequencies; i++) {
+                frequencies.push({
+                    frequency: 1 + i * 2,
+                    amplitude: Math.random() * maxAmplitude,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+            
+            let time = 0;
+            const timeStep = 0.05;
+            
+            function drawFourier() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Background grid
+                ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#333333' : '#DDDDDD';
+                ctx.lineWidth = 1;
+                
+                // Vertical grid lines
+                for (let x = 0; x < canvas.width; x += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                
+                // Horizontal grid lines
+                for (let y = 0; y < canvas.height; y += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                
+                // Draw center line
+                ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#555555' : '#AAAAAA';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height / 2);
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+                
+                // Calculate combined wave
+                const points = [];
+                for (let x = 0; x < canvas.width; x++) {
+                    let y = canvas.height / 2;
+                    for (const frequency of frequencies) {
+                        y += Math.sin((x / canvas.width) * Math.PI * 2 * frequency.frequency + time * frequency.frequency + frequency.phase) * frequency.amplitude;
+                    }
+                    points.push({ x, y });
+                }
+                
+                // Draw combined wave
+                ctx.strokeStyle = '#5D5CDE';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y);
+                
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+                
+                ctx.stroke();
+                
+                // Component waves (transparent)
+                for (const frequency of frequencies) {
+                    ctx.strokeStyle = `rgba(93, 92, 222, 0.3)`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    
+                    for (let x = 0; x < canvas.width; x++) {
+                        const y = canvas.height / 2 + Math.sin((x / canvas.width) * Math.PI * 2 * frequency.frequency + time * frequency.frequency + frequency.phase) * frequency.amplitude;
+                        
+                        if (x === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    
+                    ctx.stroke();
+                }
+                
+                time += timeStep;
+                requestAnimationFrame(drawFourier);
+            }
+            
+            drawFourier();
+        }
+
+        // Initialize Universe Tree Visualization
+        function initUniverseTree() {
+            const container = document.getElementById('universe-tree-container');
+            container.innerHTML = '';
+            
+            // Create SVG
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            container.appendChild(svg);
+            
+            // Universe data
+            const universes = [
+                { id: 0, name: 'Prime', parentId: null, size: 30, children: [1, 2, 3] },
+                { id: 1, name: 'Alpha', parentId: 0, size: 20, children: [4, 5] },
+                { id: 2, name: 'Beta', parentId: 0, size: 22, children: [6] },
+                { id: 3, name: 'Gamma', parentId: 0, size: 18, children: [] },
+                { id: 4, name: 'Alpha-1', parentId: 1, size: 15, children: [] },
+                { id: 5, name: 'Alpha-2', parentId: 1, size: 14, children: [] },
+                { id: 6, name: 'Beta-1', parentId: 2, size: 16, children: [7] },
+                { id: 7, name: 'Beta-1-A', parentId: 6, size: 12, children: [] }
+            ];
+            
+            // Layout calculation
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const levels = {};
+            
+            // Group by parent level
+            function assignLevels(universeId, level = 0) {
+                if (!levels[level]) levels[level] = [];
+                levels[level].push(universeId);
+                
+                const universe = universes.find(u => u.id === universeId);
+                universe.level = level;
+                
+                for (const childId of universe.children) {
+                    assignLevels(childId, level + 1);
+                }
+            }
+            
+            assignLevels(0);
+            
+            // Calculate positions
+            const maxLevel = Math.max(...Object.keys(levels).map(Number));
+            const levelRadius = Math.min(width, height) * 0.4 / (maxLevel + 1);
+            
+            for (const universe of universes) {
+                const levelCount = levels[universe.level].length;
+                const indexInLevel = levels[universe.level].indexOf(universe.id);
+                const angle = (indexInLevel / levelCount) * Math.PI * 2;
+                
+                universe.x = centerX + Math.cos(angle) * levelRadius * universe.level;
+                universe.y = centerY + Math.sin(angle) * levelRadius * universe.level;
+            }
+            
+            // Draw connections
+            for (const universe of universes.filter(u => u.parentId !== null)) {
+                const parent = universes.find(u => u.id === universe.parentId);
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', parent.x);
+                line.setAttribute('y1', parent.y);
+                line.setAttribute('x2', universe.x);
+                line.setAttribute('y2', universe.y);
+                line.setAttribute('stroke', '#5D5CDE');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('stroke-opacity', '0.5');
+                svg.appendChild(line);
+            }
+            
+            // Draw nodes
+            for (const universe of universes) {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.classList.add('universe-node');
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', universe.x);
+                circle.setAttribute('cy', universe.y);
+                circle.setAttribute('r', universe.size / 2);
+                circle.setAttribute('fill', universe.id === 0 ? '#5D5CDE' : '#3F3F94');
+                
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', universe.x);
+                label.setAttribute('y', universe.y + universe.size / 2 + 15);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111');
+                label.setAttribute('font-size', '12');
+                label.textContent = universe.name;
+                
+                g.appendChild(circle);
+                g.appendChild(label);
+                svg.appendChild(g);
+                
+                // Tooltip on hover
+                g.addEventListener('mouseover', () => {
+                    const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    tooltip.classList.add('tooltip');
+                    
+                    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    rect.setAttribute('x', universe.x + universe.size / 2 + 5);
+                    rect.setAttribute('y', universe.y - 30);
+                    rect.setAttribute('width', '100');
+                    rect.setAttribute('height', '60');
+                    rect.setAttribute('rx', '5');
+                    rect.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#242424' : '#F4F4F8');
+                    rect.setAttribute('stroke', '#5D5CDE');
+                    
+                    const tooltipTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    tooltipTitle.setAttribute('x', universe.x + universe.size / 2 + 10);
+                    tooltipTitle.setAttribute('y', universe.y - 10);
+                    tooltipTitle.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111');
+                    tooltipTitle.setAttribute('font-size', '12');
+                    tooltipTitle.setAttribute('font-weight', 'bold');
+                    tooltipTitle.textContent = universe.name;
+                    
+                    const tooltipInfo = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    tooltipInfo.setAttribute('x', universe.x + universe.size / 2 + 10);
+                    tooltipInfo.setAttribute('y', universe.y + 10);
+                    tooltipInfo.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111');
+                    tooltipInfo.setAttribute('font-size', '10');
+                    tooltipInfo.textContent = `Level: ${universe.level}`;
+                    
+                    tooltip.appendChild(rect);
+                    tooltip.appendChild(tooltipTitle);
+                    tooltip.appendChild(tooltipInfo);
+                    svg.appendChild(tooltip);
+                    
+                    g.addEventListener('mouseleave', () => {
+                        svg.removeChild(tooltip);
+                    });
+                });
+            }
+        }
+
+        // DOM Manipulations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize visualizations
+            initUniverseCanvas();
+            initRotationChart();
+            initHawkingAnimation();
+            initCTCAnimation();
+            initVectorField();
+            const kerrSpawner = initKerrSpawner();
+            initSimInSim();
+            
+            // Initialize 3D visualization
+            const kerr3D = initKerr3D();
+            
+            // Dark mode toggle functionality
+            const darkModeToggle = document.getElementById('darkmode-toggle');
+            darkModeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                
+                // Update chart colors if rotation chart exists
+                const chartCanvas = document.getElementById('rotationChart');
+                if (chartCanvas && Chart.getChart(chartCanvas)) {
+                    const chart = Chart.getChart(chartCanvas);
+                    const isDark = document.documentElement.classList.contains('dark');
+                    
+                    chart.options.plugins.legend.labels.color = isDark ? '#E0E0E0' : '#111111';
+                    chart.update();
+                }
+                
+                // Update visualization backgrounds
+                const isDark = document.documentElement.classList.contains('dark');
+                updateVisualizationColors(isDark);
+                
+                // Update status message
+                const statusText = document.getElementById('status-text');
+                if (statusText) {
+                    statusText.textContent = isDark ? 'Dark mode activated' : 'Light mode activated';
+                }
+            });
+            
+            // Helper function to update visualization colors when dark mode toggles
+            function updateVisualizationColors(isDark) {
+                // Update universe canvas
+                const universeCanvas = document.querySelector('#universe-canvas canvas');
+                if (universeCanvas) {
+                    const ctx = universeCanvas.getContext('2d');
+                    const bgColor = isDark ? '#181818' : '#ffffff';
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(0, 0, universeCanvas.width, universeCanvas.height);
+                }
+                
+                // Update vector field
+                const vectorField = document.querySelector('#vector-field canvas');
+                if (vectorField && vectorField.getContext) {
+                    const ctx = vectorField.getContext('2d');
+                    ctx.strokeStyle = isDark ? '#E0E0E0' : '#111111';
+                }
+                
+                // Update universe tree
+                const universeTrees = document.querySelectorAll('#universe-tree-container svg text');
+                if (universeTrees.length > 0) {
+                    universeTrees.forEach(text => {
+                        if (!text.classList.contains('tooltip-text')) {
+                            text.setAttribute('fill', isDark ? '#E0E0E0' : '#111111');
+                        }
+                    });
+                }
+            }
+            
+            // Tool interaction
+            const spinInput = document.getElementById('spin-input');
+            const spinValue = document.getElementById('spin-value');
+            const spawnSimBtn = document.getElementById('spawn-sim-btn');
+            const fourierToolBtn = document.getElementById('fourier-tool-btn');
+            const universeTreeBtn = document.getElementById('universe-tree-btn');
+            const statusText = document.getElementById('status-text');
+            
+            const kerr3DContainer = document.getElementById('kerr-3d-container');
+            const fourierContainer = document.getElementById('fourier-container');
+            const universeTreeContainer = document.getElementById('universe-tree-container');
+            const visualizationPlaceholder = document.getElementById('visualization-placeholder');
+            
+            // Spin input
+            spinInput.addEventListener('input', function() {
+                const spin = parseFloat(this.value);
+                spinValue.textContent = spin.toFixed(1);
+                
+                if (kerr3D) {
+                    kerr3D.updateSpin(spin);
+                }
+                
+                statusText.textContent = `Spin set to ${spin.toFixed(1)}`;
+            });
+            
+            // Spawn Sub-Sim
+            spawnSimBtn.addEventListener('click', function() {
+                kerrSpawner.spawnSubSim();
+                statusText.textContent = 'Sub-simulation spawned';
+                
+                // Hide placeholder and show 3D visualization
+                visualizationPlaceholder.style.display = 'none';
+                kerr3DContainer.style.display = 'block';
+                fourierContainer.style.display = 'none';
+                universeTreeContainer.style.display = 'none';
+            });
+            
+            // Fourier Tool
+            fourierToolBtn.addEventListener('click', function() {
+                // Hide placeholder and show Fourier visualization
+                visualizationPlaceholder.style.display = 'none';
+                kerr3DContainer.style.display = 'none';
+                fourierContainer.style.display = 'block';
+                universeTreeContainer.style.display = 'none';
+                
+                // Initialize or reinitialize Fourier Tool
+                const canvas = document.getElementById('fourierCanvas');
+                canvas.width = document.getElementById('fourier-container').clientWidth;
+                canvas.height = document.getElementById('fourier-container').clientHeight;
+                initFourierTool();
+                
+                statusText.textContent = 'Fourier analysis tool activated';
+            });
+            
+            // Universe Tree
+            universeTreeBtn.addEventListener('click', function() {
+                // Hide placeholder and show Universe Tree
+                visualizationPlaceholder.style.display = 'none';
+                kerr3DContainer.style.display = 'none';
+                fourierContainer.style.display = 'none';
+                universeTreeContainer.style.display = 'block';
+                
+                // Initialize Universe Tree
+                initUniverseTree();
+                
+                statusText.textContent = 'Universe tree visualization loaded';
+            });
+            
+            // Contact Modal
+            const contactBtn = document.getElementById('contact-btn');
+            const contactModal = document.getElementById('contact-modal');
+            const closeModal = document.getElementById('close-modal');
+            const sendMessage = document.getElementById('send-message');
+            
+            contactBtn.addEventListener('click', function() {
+                contactModal.classList.remove('hidden');
+            });
+            
+            closeModal.addEventListener('click', function() {
+                contactModal.classList.add('hidden');
+            });
+            
+            sendMessage.addEventListener('click', function() {
+                const inputs = contactModal.querySelectorAll('input, textarea');
+                let valid = true;
+                
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        valid = false;
+                        input.classList.add('border-red-500');
+                    } else {
+                        input.classList.remove('border-red-500');
+                    }
+                });
+                
+                if (valid) {
+                    statusText.textContent = 'Message sent successfully!';
+                    contactModal.classList.add('hidden');
+                    
+                    // Clear form
+                    inputs.forEach(input => input.value = '');
+                }
+            });
+            
+            // Close modal on outside click
+            window.addEventListener('click', function(event) {
+                if (event.target === contactModal) {
+                    contactModal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
