@@ -99,6 +99,26 @@
         .dark {
             color-scheme: dark;
         }
+        
+        /* Hawking radiation animation */
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(0, 0); }
+            20% { opacity: 0.8; }
+            100% { opacity: 0; transform: translate(var(--tx, 50px), var(--ty, 50px)); }
+        }
+        
+        /* 5D Gateway Styles */
+        #gateway-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #0f0;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text transition-colors duration-300">
@@ -153,7 +173,7 @@
             <div class="max-w-3xl mx-auto text-center">
                 <h2 class="text-3xl md:text-5xl font-bold mb-6 text-gradient">Die Knoten unserer Realität</h2>
                 <p class="text-lg md:text-xl mb-8 bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-sm p-4 rounded-lg">
-                    Vergiss den chaotischen Kosmos. Stell dir vor: Jede Galaxie, jeder Stern – Nodes in einem gigantischen Cluster. 
+                    Vergiss den chaotischen Kosmos. Stell dir vor: Jede Galaxie, jeder Stern -- Nodes in einem gigantischen Cluster. 
                     Das ist <span class="font-bold text-primary">KerrCode</span>.
                 </p>
                 <div class="flex flex-wrap justify-center gap-4">
@@ -173,9 +193,9 @@
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row gap-8 items-center">
                 <div class="md:w-1/2">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-6">1. Intro: „Kein Chaos – ein Netzwerk"</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-6">1. Intro: „Kein Chaos -- ein Netzwerk"</h2>
                     <div class="space-y-4">
-                        <p>„Vergiss Chaos, Bro. Galaxien, Sterne – Nodes in einem <span class="font-bold text-primary">Cluster</span>."</p>
+                        <p>„Vergiss Chaos, Bro. Galaxien, Sterne -- Nodes in einem <span class="font-bold text-primary">Cluster</span>."</p>
                         <p><span class="font-bold text-primary">KerrCode</span> sagt: Kerr-Löcher sind rotierende Sim-Knoten. Ursprung? Vielleicht da, wo der Spin began. Scroll und hack die Matrix!</p>
                         <p class="mt-6 text-sm bg-light-bg dark:bg-dark-bg p-4 rounded-lg">
                             <span class="font-bold">Was sind Kerr-Schwarze Löcher?</span><br>
@@ -206,7 +226,7 @@
     <section id="architektur" class="py-16">
         <div class="container mx-auto px-6">
             <h2 class="text-2xl md:text-3xl font-bold mb-10 text-center">2. Architektur: Kerr-Knoten entschlüsselt</h2>
-            <p class="text-lg text-center mb-12">„<span class="text-primary">Kerr-Löcher</span> drehen Raumzeit – Fakt. Als <span class="text-primary">Knoten</span>? Check:"</p>
+            <p class="text-lg text-center mb-12">„<span class="text-primary">Kerr-Löcher</span> drehen Raumzeit -- Fakt. Als <span class="text-primary">Knoten</span>? Check:"</p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Zeit-Cache Card -->
@@ -219,7 +239,7 @@
                         </div>
                     </div>
                     <h3 class="text-xl font-bold mb-2 text-center">Zeit-Cache</h3>
-                    <p>Daten .zipped – Info bleibt. Kosmischer RAM?</p>
+                    <p>Daten .zipped -- Info bleibt. Kosmischer RAM?</p>
                     <p class="mt-4 text-sm text-light-text/70 dark:text-dark-text/70">Wenn Materie reinfällt, wird sie komprimiert. Information bleibt laut dem holografischen Prinzip erhalten.</p>
                 </div>
                 
@@ -233,7 +253,7 @@
                         </div>
                     </div>
                     <h3 class="text-xl font-bold mb-2 text-center">Fehlerkorrektur</h3>
-                    <p>CTCs fixen Bugs – Physik sagt ja. Code-Loop?</p>
+                    <p>CTCs fixen Bugs -- Physik sagt ja. Code-Loop?</p>
                     <p class="mt-4 text-sm text-light-text/70 dark:text-dark-text/70">CTCs (geschlossene zeitartige Kurven) sind mathematisch möglich im Cauchy-Horizont. Schleifen könnten Instabilitäten im 'Code' fixen.</p>
                 </div>
                 
@@ -269,7 +289,7 @@
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold mb-2">JWST-Rotation</h3>
-                            <p class="mb-4">66% clockwise – JWST. Takt zum Ursprung?</p>
+                            <p class="mb-4">66% clockwise -- JWST. Takt zum Ursprung?</p>
                             <div class="mt-4 h-40 flex items-center justify-center" id="galaxy-rotation-chart">
                                 <canvas id="rotationChart"></canvas>
                             </div>
@@ -328,7 +348,7 @@
                         </svg>
                         Rotation tracken
                     </h3>
-                    <p>Spin zeigt den Start – Vektorfeld sagt wo. Master-Node?</p>
+                    <p>Spin zeigt den Start -- Vektorfeld sagt wo. Master-Node?</p>
                     <div class="mt-6 relative h-36 overflow-hidden rounded-lg bg-light-bg/50 dark:bg-dark-bg/50 flex items-center justify-center">
                         <div id="vector-field" class="w-full h-full"></div>
                     </div>
@@ -341,7 +361,7 @@
                         </svg>
                         Kerr-Spawner
                     </h3>
-                    <p>Singularität forkelt Sub-Sims – Physik erlaubt's. Fraktal-Matrix?</p>
+                    <p>Singularität forkelt Sub-Sims -- Physik erlaubt's. Fraktal-Matrix?</p>
                     <div class="mt-6 relative h-36 overflow-hidden rounded-lg bg-light-bg/50 dark:bg-dark-bg/50 flex items-center justify-center">
                         <div id="kerr-spawner-visual" class="w-full h-full"></div>
                     </div>
@@ -354,7 +374,7 @@
                         </svg>
                         Sim-in-Sim
                     </h3>
-                    <p>Wir simulieren Kerrs – Spiegelzeit. Debug-Level up?</p>
+                    <p>Wir simulieren Kerrs -- Spiegelzeit. Debug-Level up?</p>
                     <div class="mt-6 relative h-36 overflow-hidden rounded-lg bg-light-bg/50 dark:bg-dark-bg/50 flex items-center justify-center">
                         <div id="sim-in-sim-visual" class="w-full h-full flex items-center justify-center">
                             <div class="recursive-container w-24 h-24 relative">
@@ -476,12 +496,23 @@
                             </button>
                         </div>
                         
-                        <button id="universe-tree-btn" class="w-full px-4 py-3 bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text border border-primary rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Show Universen-Baum
-                        </button>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button id="universe-tree-btn" class="w-full px-4 py-3 bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text border border-primary rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Show Universen-Baum
+                            </button>
+                            
+                            <!-- 5D Gateway Button -->
+                            <button id="gateway-5d-btn" class="w-full px-4 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg hover:from-green-500 hover:to-blue-600 transition flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Kerr 5D Gateway
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -496,6 +527,14 @@
                             </div>
                             <div id="universe-tree-container" class="w-full h-full hidden">
                                 <!-- Universe tree visualization will be added here -->
+                            </div>
+                            <!-- 5D Gateway Container -->
+                            <div id="gateway-5d-container" class="w-full h-full hidden">
+                                <div id="gateway-info" class="hidden">
+                                    <strong>Kerr 5D Gateway</strong><br>
+                                    Visualisierung einer ringförmigen Singularität mit hypothetischem 5D-Zugang.<br>
+                                    Energiefluss und Krümmung basierend auf 5D-Kerr-Metrik.
+                                </div>
                             </div>
                             <div id="visualization-placeholder" class="text-center p-6">
                                 <div class="text-7xl mb-4 opacity-20">⚫</div>
@@ -546,6 +585,16 @@
     <script>
         // Global variable for rotation data
         let rotationsData = Array(50).fill(0).map(() => (Math.random() < 0.66 ? 1 : -1)); // Initial JWST-like data
+        
+        // Simuliertes kerrParams-Array (als Ersatz für fetch)
+        const kerrParams = Array(100).fill(0).map(() => ({
+            curvature: Math.random() * 20,
+            energy_flow: 0.5 + Math.random(),
+            spin: Math.random() * 2 - 1
+        }));
+
+        // Variable to track active visualization
+        let activeVisualization = 'none';
 
         // Initialize Universe Canvas Background
         function initUniverseCanvas() {
@@ -698,21 +747,11 @@
                 const finalY = y * (5 + Math.random() * 5);
                 
                 particle.style.animation = `fadeInOut ${duration}s ease-out ${delay}s infinite`;
-                particle.style.transform = `translate(${finalX}px, ${finalY}px)`;
+                particle.style.setProperty('--tx', `${finalX}px`);
+                particle.style.setProperty('--ty', `${finalY}px`);
                 
                 container.appendChild(particle);
             }
-            
-            // Add CSS animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes fadeInOut {
-                    0% { opacity: 0; transform: translate(0, 0); }
-                    20% { opacity: 0.8; }
-                    100% { opacity: 0; transform: translate(var(--tx, 50px), var(--ty, 50px)); }
-                }
-            `;
-            document.head.appendChild(style);
         }
 
         // Initialize CTC animation
@@ -1214,7 +1253,13 @@
                 requestAnimationFrame(drawFourier);
             }
             
-            drawFourier();
+            let animationFrameId = requestAnimationFrame(drawFourier);
+            
+            return {
+                cleanup: () => {
+                    cancelAnimationFrame(animationFrameId);
+                }
+            };
         }
 
         // Initialize Universe Tree Visualization
@@ -1396,6 +1441,164 @@
             }
         }
 
+        // Initialize 5D Gateway Visualization
+        function init5DGateway() {
+            console.log("Initializing 5D Gateway");
+            const container = document.getElementById('gateway-5d-container');
+            
+            // Show the gateway info
+            const infoBox = document.getElementById('gateway-info');
+            infoBox.classList.remove('hidden');
+            
+            // Setup 5D Gateway visualization with Three.js
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(65, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 10;
+            
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Kerr-Ring-Singularität
+            const ringGeometry = new THREE.TorusGeometry(2.2, 0.3, 32, 100);
+            const ringMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x00ff99, 
+                emissive: 0x00ff99, 
+                metalness: 0.8, 
+                roughness: 0.3 
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            scene.add(ring);
+            
+            // 5D-Gateway-Vortex
+            const vortexGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+            const vortexMaterial = new THREE.MeshStandardMaterial({
+                color: 0x0044ff,
+                emissive: 0x0044ff,
+                transparent: true,
+                opacity: 0.3,
+                wireframe: true
+            });
+            const vortex = new THREE.Mesh(vortexGeometry, vortexMaterial);
+            scene.add(vortex);
+            
+            // Teilchenstrom
+            const particles = [];
+            const particleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+            const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            
+            for (let i = 0; i < 100; i++) {
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                particle.userData = {
+                    angle: Math.random() * Math.PI * 2,
+                    radius: 1.5 + Math.random() * 0.5,
+                    height: -1 + Math.random() * 2,
+                    speed: 0.01 + Math.random() * 0.01,
+                    rIndex: Math.floor(Math.random() * kerrParams.length)
+                };
+                scene.add(particle);
+                particles.push(particle);
+            }
+            
+            // Licht
+            const ambientLight = new THREE.AmbientLight(0x444444);
+            const pointLight = new THREE.PointLight(0x00ff99, 1);
+            pointLight.position.set(5, 5, 5);
+            scene.add(ambientLight);
+            scene.add(pointLight);
+            
+            // Interaktive Gateway-Aktivierung
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            
+            renderer.domElement.addEventListener('click', (event) => {
+                // Berechne normalisierte Mausposition
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObject(vortex);
+                
+                if (intersects.length > 0) {
+                    vortexMaterial.color.set(0xff8800);
+                    document.getElementById('status-text').textContent = "5D Gateway aktiviert! Interdimensionaler Zugang möglich.";
+                }
+            });
+            
+            // Animation-Loop
+            const clock = new THREE.Clock();
+            let animationFrameId;
+            
+            function animate() {
+                animationFrameId = requestAnimationFrame(animate);
+                const t = clock.getElapsedTime();
+                
+                // Pulsation des Vortex
+                const scale = 1 + Math.sin(t * 2) * 0.05;
+                vortex.scale.set(scale, scale, scale);
+                
+                const intensity = 0.3 + Math.abs(Math.sin(t * 2)) * 0.7;
+                vortexMaterial.emissiveIntensity = intensity;
+                
+                ring.rotation.x += 0.005;
+                ring.rotation.y += 0.01;
+                vortex.rotation.y -= 0.002;
+                
+                // Teilchenbewegung
+                particles.forEach(p => {
+                    const param = kerrParams[p.userData.rIndex];
+                    const energyFlow = param ? param.energy_flow : 1;
+                    
+                    p.userData.angle += p.userData.speed * energyFlow;
+                    p.position.x = Math.cos(p.userData.angle) * p.userData.radius;
+                    p.position.z = Math.sin(p.userData.angle) * p.userData.radius;
+                    p.position.y = p.userData.height;
+                });
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Resize Handler
+            function handleResize() {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Return cleanup function
+            return function cleanup() {
+                console.log("Cleaning up 5D Gateway");
+                
+                cancelAnimationFrame(animationFrameId);
+                window.removeEventListener('resize', handleResize);
+                
+                scene.remove(ring);
+                scene.remove(vortex);
+                particles.forEach(p => scene.remove(p));
+                scene.remove(ambientLight);
+                scene.remove(pointLight);
+                
+                renderer.dispose();
+                ringGeometry.dispose();
+                ringMaterial.dispose();
+                vortexGeometry.dispose();
+                vortexMaterial.dispose();
+                particleGeometry.dispose();
+                particleMaterial.dispose();
+                
+                if (container.contains(renderer.domElement)) {
+                    container.removeChild(renderer.domElement);
+                }
+                
+                infoBox.classList.add('hidden');
+            };
+        }
+
         // DOM Manipulations
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize visualizations
@@ -1409,6 +1612,9 @@
             
             // Initialize 3D visualization
             const kerr3D = initKerr3D();
+            
+            // Store cleanup functions
+            const cleanupFunctions = {};
             
             // CSV Upload functionality
             document.getElementById('upload-csv-btn').addEventListener('click', () => {
@@ -1456,14 +1662,16 @@
                         initRotationChart();
                         
                         // Update Fourier Tool if it's active
-                        const fourierContainer = document.getElementById('fourier-container');
-                        if (fourierContainer.style.display === 'block') {
-                            initFourierTool();
+                        if (activeVisualization === 'fourier') {
+                            if (cleanupFunctions['fourier']) {
+                                cleanupFunctions['fourier']();
+                            }
+                            const fourierCleanup = initFourierTool();
+                            cleanupFunctions['fourier'] = fourierCleanup.cleanup;
                         }
                         
                         // Update Universe Tree if it's active
-                        const universeTreeContainer = document.getElementById('universe-tree-container');
-                        if (universeTreeContainer.style.display === 'block') {
+                        if (activeVisualization === 'universe-tree') {
                             initUniverseTree();
                         }
                         
@@ -1534,17 +1742,40 @@
                 }
             }
             
+            // Function to hide all visualizations
+            function hideAllVisualizations() {
+                // Clean up any current visualization
+                if (cleanupFunctions[activeVisualization]) {
+                    cleanupFunctions[activeVisualization]();
+                    delete cleanupFunctions[activeVisualization];
+                }
+                
+                const kerr3DContainer = document.getElementById('kerr-3d-container');
+                const fourierContainer = document.getElementById('fourier-container');
+                const universeTreeContainer = document.getElementById('universe-tree-container');
+                const gateway5dContainer = document.getElementById('gateway-5d-container');
+                const visualizationPlaceholder = document.getElementById('visualization-placeholder');
+                
+                kerr3DContainer.style.display = 'none';
+                fourierContainer.style.display = 'none';
+                universeTreeContainer.style.display = 'none';
+                gateway5dContainer.style.display = 'none';
+                visualizationPlaceholder.style.display = 'flex';
+            }
+            
             // Tool interaction
             const spinInput = document.getElementById('spin-input');
             const spinValue = document.getElementById('spin-value');
             const spawnSimBtn = document.getElementById('spawn-sim-btn');
             const fourierToolBtn = document.getElementById('fourier-tool-btn');
             const universeTreeBtn = document.getElementById('universe-tree-btn');
+            const gateway5dBtn = document.getElementById('gateway-5d-btn');
             const statusText = document.getElementById('status-text');
             
             const kerr3DContainer = document.getElementById('kerr-3d-container');
             const fourierContainer = document.getElementById('fourier-container');
             const universeTreeContainer = document.getElementById('universe-tree-container');
+            const gateway5dContainer = document.getElementById('gateway-5d-container');
             const visualizationPlaceholder = document.getElementById('visualization-placeholder');
             
             // Spin input
@@ -1564,42 +1795,59 @@
                 kerrSpawner.spawnSubSim();
                 statusText.textContent = 'Sub-simulation spawned';
                 
-                // Hide placeholder and show 3D visualization
+                // Hide all visualizations and show 3D visualization
+                hideAllVisualizations();
                 visualizationPlaceholder.style.display = 'none';
                 kerr3DContainer.style.display = 'block';
-                fourierContainer.style.display = 'none';
-                universeTreeContainer.style.display = 'none';
+                
+                activeVisualization = 'kerr3d';
             });
             
             // Fourier Tool
             fourierToolBtn.addEventListener('click', function() {
-                // Hide placeholder and show Fourier visualization
+                console.log("Fourier Tool button clicked");
+                // Hide all visualizations and show Fourier visualization
+                hideAllVisualizations();
                 visualizationPlaceholder.style.display = 'none';
-                kerr3DContainer.style.display = 'none';
                 fourierContainer.style.display = 'block';
-                universeTreeContainer.style.display = 'none';
                 
                 // Initialize or reinitialize Fourier Tool
-                const canvas = document.getElementById('fourierCanvas');
-                canvas.width = document.getElementById('fourier-container').clientWidth;
-                canvas.height = document.getElementById('fourier-container').clientHeight;
-                initFourierTool();
+                const fourierCleanup = initFourierTool();
+                cleanupFunctions['fourier'] = fourierCleanup.cleanup;
                 
+                activeVisualization = 'fourier';
                 statusText.textContent = 'Fourier analysis tool activated';
             });
             
             // Universe Tree
             universeTreeBtn.addEventListener('click', function() {
-                // Hide placeholder and show Universe Tree
+                console.log("Universe Tree button clicked");
+                // Hide all visualizations and show Universe Tree
+                hideAllVisualizations();
                 visualizationPlaceholder.style.display = 'none';
-                kerr3DContainer.style.display = 'none';
-                fourierContainer.style.display = 'none';
                 universeTreeContainer.style.display = 'block';
                 
                 // Initialize Universe Tree
                 initUniverseTree();
                 
+                activeVisualization = 'universe-tree';
                 statusText.textContent = 'Universe tree visualization loaded';
+            });
+            
+            // 5D Gateway
+            gateway5dBtn.addEventListener('click', function() {
+                console.log("5D Gateway button clicked");
+                // Hide all visualizations and show 5D Gateway
+                hideAllVisualizations();
+                visualizationPlaceholder.style.display = 'none';
+                gateway5dContainer.style.display = 'block';
+                
+                // Initialize 5D Gateway and store cleanup function
+                const cleanup = init5DGateway();
+                cleanupFunctions['gateway-5d'] = cleanup;
+                
+                activeVisualization = 'gateway-5d';
+                statusText.textContent = '5D Gateway initialisiert. Klicke auf den blauen Vortex für Aktivierung.';
             });
             
             // Contact Modal
