@@ -30,11 +30,17 @@
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'spin-slow': 'spin 8s linear infinite',
                         'float': 'float 6s ease-in-out infinite',
+                        'svg-spin': 'spin 10s linear infinite', // Added for SVG logo
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-10px)' },
+                        },
+                        // Added spin keyframes if not already fully defined by Tailwind
+                        spin: {
+                           'from': { transform: 'rotate(0deg)' },
+                           'to': { transform: 'rotate(360deg)' },
                         }
                     }
                 }
@@ -46,67 +52,67 @@
             0% { transform: rotate3d(1, 1, 1, 0deg); }
             100% { transform: rotate3d(1, 1, 1, 360deg); }
         }
-        
+
         .rotate-3d {
             animation: rotate3d 20s linear infinite;
         }
-        
+
         .kerr-orbit {
             transform-style: preserve-3d;
             position: relative;
         }
-        
+
         canvas {
             max-width: 100%;
         }
-        
+
         .universe-node {
             transition: all 0.3s ease;
         }
-        
+
         .universe-node:hover {
             filter: brightness(1.5);
             transform: scale(1.1);
         }
-        
+
         .text-gradient {
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
             background-image: linear-gradient(90deg, #5D5CDE, #9E9DFF);
         }
-        
+
         /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.1);
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: rgba(93, 92, 222, 0.7);
             border-radius: 4px;
         }
-        
+
         /* Dark mode adjustments */
         .dark ::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
         }
-        
+
         .dark {
             color-scheme: dark;
         }
-        
+
         /* Hawking radiation animation */
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translate(0, 0); }
             20% { opacity: 0.8; }
             100% { opacity: 0; transform: translate(var(--tx, 50px), var(--ty, 50px)); }
         }
-        
+
         /* 5D Gateway Styles */
         #gateway-info {
             position: absolute;
@@ -122,7 +128,6 @@
     </style>
 </head>
 <body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text transition-colors duration-300">
-    <!-- Check for dark mode -->
     <script>
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.classList.add('dark');
@@ -133,18 +138,26 @@
             } else {
                 document.documentElement.classList.remove('dark');
             }
+            // Update chart colors on theme change
+            updateVisualizationColors(event.matches);
         });
     </script>
 
-    <!-- Navigation -->
     <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/90 dark:bg-dark-bg/90 shadow-md">
         <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
-            <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-primary animate-pulse-slow flex items-center justify-center mr-3">
-                    <div class="w-6 h-6 rounded-full border-2 border-white animate-spin-slow"></div>
-                </div>
+            <a href="#" class="flex items-center"> <svg class="w-10 h-10 mr-3 animate-svg-spin" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#5D5CDE;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#9E9DFF;stop-opacity:1" />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGradient)" stroke-width="5" opacity="0.6"/>
+                  <circle cx="50" cy="50" r="35" fill="none" stroke="#5D5CDE" stroke-width="3" stroke-dasharray="10 5" opacity="0.8"/>
+                  <circle cx="50" cy="50" r="8" fill="url(#logoGradient)"/>
+                </svg>
                 <h1 class="text-xl md:text-2xl font-bold text-gradient">KerrCode</h1>
-            </div>
+            </a>
             <div class="flex flex-wrap items-center mt-2 md:mt-0">
                 <a href="#intro" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Intro</a>
                 <a href="#architektur" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Architektur</a>
@@ -153,11 +166,9 @@
                 <a href="#join" class="px-3 py-1 mx-1 text-sm rounded hover:bg-primary hover:text-white transition">Join</a>
                 <a href="#tools" class="ml-2 px-4 py-1 bg-primary text-white rounded-full text-sm hover:bg-secondary transition">Tools</a>
                 <button id="darkmode-toggle" class="ml-3 p-2 rounded-full bg-light-card dark:bg-dark-card hover:bg-light-bg/70 dark:hover:bg-dark-card/70 transition">
-                    <!-- Sun icon (shown in dark mode) -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    <!-- Moon icon (shown in light mode) -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
@@ -166,14 +177,13 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-20">
         <div class="absolute inset-0 z-0" id="universe-canvas"></div>
         <div class="container mx-auto px-6 relative z-10">
             <div class="max-w-3xl mx-auto text-center">
                 <h2 class="text-3xl md:text-5xl font-bold mb-6 text-gradient">Die Knoten unserer Realität</h2>
                 <p class="text-lg md:text-xl mb-8 bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-sm p-4 rounded-lg">
-                    Vergiss den chaotischen Kosmos. Stell dir vor: Jede Galaxie, jeder Stern -- Nodes in einem gigantischen Cluster. 
+                    Vergiss den chaotischen Kosmos. Stell dir vor: Jede Galaxie, jeder Stern -- Nodes in einem gigantischen Cluster.
                     Das ist <span class="font-bold text-primary">KerrCode</span>.
                 </p>
                 <div class="flex flex-wrap justify-center gap-4">
@@ -188,7 +198,6 @@
         </div>
     </section>
 
-    <!-- Intro Section -->
     <section id="intro" class="py-16 bg-light-card dark:bg-dark-card">
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row gap-8 items-center">
@@ -222,14 +231,12 @@
         </div>
     </section>
 
-    <!-- Architecture Section -->
     <section id="architektur" class="py-16">
         <div class="container mx-auto px-6">
             <h2 class="text-2xl md:text-3xl font-bold mb-10 text-center">2. Architektur: Kerr-Knoten entschlüsselt</h2>
             <p class="text-lg text-center mb-12">„<span class="text-primary">Kerr-Löcher</span> drehen Raumzeit -- Fakt. Als <span class="text-primary">Knoten</span>? Check:"</p>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Zeit-Cache Card -->
                 <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg hover:shadow-xl transition">
                     <div class="flex justify-center mb-4">
                         <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
@@ -242,8 +249,7 @@
                     <p>Daten .zipped -- Info bleibt. Kosmischer RAM?</p>
                     <p class="mt-4 text-sm text-light-text/70 dark:text-dark-text/70">Wenn Materie reinfällt, wird sie komprimiert. Information bleibt laut dem holografischen Prinzip erhalten.</p>
                 </div>
-                
-                <!-- Fehlerkorrektur Card -->
+
                 <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg hover:shadow-xl transition">
                     <div class="flex justify-center mb-4">
                         <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
@@ -256,8 +262,7 @@
                     <p>CTCs fixen Bugs -- Physik sagt ja. Code-Loop?</p>
                     <p class="mt-4 text-sm text-light-text/70 dark:text-dark-text/70">CTCs (geschlossene zeitartige Kurven) sind mathematisch möglich im Cauchy-Horizont. Schleifen könnten Instabilitäten im 'Code' fixen.</p>
                 </div>
-                
-                <!-- API Card -->
+
                 <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg hover:shadow-xl transition">
                     <div class="flex justify-center mb-4">
                         <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
@@ -274,14 +279,12 @@
         </div>
     </section>
 
-    <!-- Evidence Section -->
     <section id="beweise" class="py-16 bg-light-card dark:bg-dark-card">
         <div class="container mx-auto px-6">
             <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">3. Beweise: Spin & Sub-Sims</h2>
             <p class="text-lg text-center mb-12">„Hints, Bro:"</p>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                <!-- JWST Rotation Evidence -->
                 <div class="relative">
                     <div class="evidence-card bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg overflow-hidden transition hover:shadow-xl transform hover:-translate-y-1">
                         <div class="absolute top-0 right-0 w-20 h-20">
@@ -296,8 +299,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Hawking Radiation Evidence -->
+
                 <div class="relative">
                     <div class="evidence-card bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg overflow-hidden transition hover:shadow-xl transform hover:-translate-y-1">
                         <div class="p-6">
@@ -306,15 +308,13 @@
                             <div class="mt-4 h-40 flex items-center justify-center relative">
                                 <div class="w-20 h-20 bg-black rounded-full shadow-[0_0_30px_rgba(93,92,222,0.5)]"></div>
                                 <div class="absolute inset-0 hawking-radiation flex items-center justify-center">
-                                    <!-- Animated radiation particles -->
                                     <div id="hawking-animation"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- CTCs Evidence -->
+
                 <div class="relative">
                     <div class="evidence-card bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg overflow-hidden transition hover:shadow-xl transform hover:-translate-y-1">
                         <div class="p-6">
@@ -334,12 +334,11 @@
         </div>
     </section>
 
-    <!-- Hack Section -->
     <section id="hack" class="py-16">
         <div class="container mx-auto px-6">
             <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">4. Hack: Ursprung & Nested Sims</h2>
             <p class="text-lg text-center mb-10">„Code brechen, Bro:"</p>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg">
                     <h3 class="text-xl font-bold mb-4 flex items-center">
@@ -353,7 +352,7 @@
                         <div id="vector-field" class="w-full h-full"></div>
                     </div>
                 </div>
-                
+
                 <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg">
                     <h3 class="text-xl font-bold mb-4 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -366,7 +365,7 @@
                         <div id="kerr-spawner-visual" class="w-full h-full"></div>
                     </div>
                 </div>
-                
+
                 <div class="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-lg">
                     <h3 class="text-xl font-bold mb-4 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -378,8 +377,7 @@
                     <div class="mt-6 relative h-36 overflow-hidden rounded-lg bg-light-bg/50 dark:bg-dark-bg/50 flex items-center justify-center">
                         <div id="sim-in-sim-visual" class="w-full h-full flex items-center justify-center">
                             <div class="recursive-container w-24 h-24 relative">
-                                <!-- Recursive visualization goes here -->
-                            </div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -387,12 +385,11 @@
         </div>
     </section>
 
-    <!-- Join Section -->
     <section id="join" class="py-16 bg-light-card dark:bg-dark-card">
         <div class="container mx-auto px-6">
             <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">5. Join: „Hack den Kosmos"</h2>
             <p class="text-lg text-center mb-10">„Jetzt, Bros:"</p>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="p-6 bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg text-center">
                     <div class="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
@@ -404,7 +401,7 @@
                     <p class="mb-4">Spin für Ursprung finden.</p>
                     <a href="#tools" class="inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition">Get Fourier Tool</a>
                 </div>
-                
+
                 <div class="p-6 bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg text-center">
                     <div class="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -415,7 +412,7 @@
                     <p class="mb-4">Sub-Sims in Kerrs testen.</p>
                     <a href="#tools" class="inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition">Simulate Now</a>
                 </div>
-                
+
                 <div class="p-6 bg-light-bg dark:bg-dark-bg rounded-xl shadow-lg text-center">
                     <div class="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -430,16 +427,14 @@
         </div>
     </section>
 
-    <!-- Tools Section -->
     <section id="tools" class="py-16">
         <div class="container mx-auto px-6">
             <h2 class="text-2xl md:text-3xl font-bold mb-10 text-center">KerrCode-Control-Panel</h2>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <!-- Simulation Panel -->
                 <div class="bg-light-card dark:bg-dark-card rounded-xl shadow-lg p-6">
                     <h3 class="text-xl font-bold mb-6">Simulation Parameters</h3>
-                    
+
                     <div class="space-y-6">
                         <div>
                             <label class="block mb-2 font-medium">
@@ -452,22 +447,21 @@
                                 <span>1</span>
                             </div>
                         </div>
-                        
+
                         <div>
                             <label class="block mb-2 font-medium">
                                 Lichtgeschwindigkeit (c, m/s):
                             </label>
                             <input type="number" value="299792458" class="w-full px-4 py-2 text-base rounded-lg bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-700" id="light-speed-input">
                         </div>
-                        
+
                         <div>
                             <label class="block mb-2 font-medium">
                                 Gravitationskonstante (G, x10^-11):
                             </label>
                             <input type="number" value="6.67430" step="0.00001" class="w-full px-4 py-2 text-base rounded-lg bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-700" id="gravity-input">
                         </div>
-                        
-                        <!-- CSV Upload -->
+
                         <div>
                             <label class="block mb-2 font-medium">
                                 JWST-Daten hochladen (CSV):
@@ -480,7 +474,7 @@
                                 CSV hochladen
                             </button>
                         </div>
-                        
+
                         <div class="flex space-x-4">
                             <button id="spawn-sim-btn" class="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -495,7 +489,7 @@
                                 Get Fourier Tool
                             </button>
                         </div>
-                        
+
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <button id="universe-tree-btn" class="w-full px-4 py-3 bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text border border-primary rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -503,8 +497,7 @@
                                 </svg>
                                 Show Universen-Baum
                             </button>
-                            
-                            <!-- 5D Gateway Button -->
+
                             <button id="gateway-5d-btn" class="w-full px-4 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg hover:from-green-500 hover:to-blue-600 transition flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -513,8 +506,7 @@
                                 Kerr 5D Gateway
                             </button>
                         </div>
-                        
-                        <!-- External Resource Links -->
+
                         <div class="mt-6">
                             <h4 class="font-medium mb-3">Externe Ressourcen:</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -534,38 +526,34 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
-                                   Mila – zentrale KI für Host-Steuerung
+                                    Mila – zentrale KI für Host-Steuerung
                                 </a>
                                 <a href="https://zaha175.github.io/RAUMSCHIFFKONSOLE/" target="_blank" rel="noopener" class="w-full px-4 py-3 bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text border border-primary rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
-                                   RAUMSCHIFFKONSOLE
+                                    RAUMSCHIFFKONSOLE
                                 </a>
                                 <a href="https://zaha175.github.io/LOGO/" target="_blank" rel="noopener" class="w-full px-4 py-3 bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text border border-primary rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
-                                   LOGO
+                                    LOGO
                                 </a>
                              </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Visualization Panel -->
+
                 <div class="bg-light-card dark:bg-dark-card rounded-xl shadow-lg p-6">
                     <h3 class="text-xl font-bold mb-4">Visualization</h3>
                     <div class="relative" style="height: 400px;">
-                        <div id="visualization-container" class="absolute inset-0 bg-light-bg/50 dark:bg-dark-bg/50 rounded-lg flex items-center justify-center">
-                            <div id="kerr-3d-container" class="w-full h-full"></div>
+                        <div id="visualization-container" class="absolute inset-0 bg-light-bg/50 dark:bg-dark-bg/50 rounded-lg flex items-center justify-center overflow-hidden"> <div id="kerr-3d-container" class="w-full h-full"></div>
                             <div id="fourier-container" class="w-full h-full hidden">
                                 <canvas id="fourierCanvas"></canvas>
                             </div>
                             <div id="universe-tree-container" class="w-full h-full hidden">
-                                <!-- Universe tree visualization will be added here -->
-                            </div>
-                            <!-- 5D Gateway Container -->
+                                </div>
                             <div id="gateway-5d-container" class="w-full h-full hidden">
                                 <div id="gateway-info" class="hidden">
                                     <strong>Kerr 5D Gateway</strong><br>
@@ -573,8 +561,7 @@
                                     Energiefluss und Krümmung basierend auf 5D-Kerr-Metrik.
                                 </div>
                             </div>
-                            <div id="visualization-placeholder" class="text-center p-6">
-                                <div class="text-7xl mb-4 opacity-20">⚫</div>
+                            <div id="visualization-placeholder" class="text-center p-6 hidden"> <div class="text-7xl mb-4 opacity-20">⚫</div>
                                 <p class="text-light-text/50 dark:text-dark-text/50">Select a tool to visualize</p>
                             </div>
                         </div>
@@ -590,7 +577,6 @@
         </div>
     </section>
 
-    <!-- Contact Modal -->
     <div id="contact-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
         <div class="bg-light-bg dark:bg-dark-bg rounded-xl shadow-xl p-6 w-full max-w-lg mx-4">
             <div class="flex justify-between items-center mb-4">
@@ -622,7 +608,7 @@
     <script>
         // Global variable for rotation data
         let rotationsData = Array(50).fill(0).map(() => (Math.random() < 0.66 ? 1 : -1)); // Initial JWST-like data
-        
+
         // Simuliertes kerrParams-Array (als Ersatz für fetch)
         const kerrParams = Array(100).fill(0).map(() => ({
             curvature: Math.random() * 20,
@@ -631,24 +617,32 @@
         }));
 
         // Variable to track active visualization
-        let activeVisualization = 'none';
+        let activeVisualization = 'kerr3d'; // Start with kerr3d as default
+
+        // Store cleanup functions
+        const cleanupFunctions = {};
 
         // Initialize Universe Canvas Background
         function initUniverseCanvas() {
+            const canvasContainer = document.getElementById('universe-canvas');
+            if (!canvasContainer) return; // Exit if container not found
+            canvasContainer.innerHTML = ''; // Clear previous canvas if any
             const canvas = document.createElement('canvas');
-            document.getElementById('universe-canvas').appendChild(canvas);
+            canvasContainer.appendChild(canvas);
             const ctx = canvas.getContext('2d');
+            if (!ctx) return; // Exit if context cannot be created
+
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const bgColor = isDarkMode ? '#181818' : '#ffffff';
+
+            let isDarkMode = document.documentElement.classList.contains('dark');
+            let bgColor = isDarkMode ? '#181818' : '#ffffff';
             const nodeColor = '#5D5CDE';
-            
+
             // Draw nodes and connections
             const nodes = [];
             const numNodes = Math.floor(window.innerWidth * window.innerHeight / 15000);
-            
+
             for (let i = 0; i < numNodes; i++) {
                 nodes.push({
                     x: Math.random() * canvas.width,
@@ -659,23 +653,29 @@
                     opacity: Math.random() * 0.5 + 0.1
                 });
             }
-            
+
+            let animationFrameId;
             function drawNodes() {
+                isDarkMode = document.documentElement.classList.contains('dark');
+                bgColor = isDarkMode ? '#181818' : '#ffffff';
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
+
                 for (let i = 0; i < nodes.length; i++) {
                     const node = nodes[i];
-                    
+
                     // Update position
                     node.x += Math.cos(node.angle) * node.speed;
                     node.y += Math.sin(node.angle) * node.speed;
-                    
-                    // Bounce off edges
-                    if (node.x < 0 || node.x > canvas.width) node.angle = Math.PI - node.angle;
-                    if (node.y < 0 || node.y > canvas.height) node.angle = -node.angle;
-                    
+
+                    // Wrap around edges instead of bouncing
+                    if (node.x < 0) node.x = canvas.width;
+                    if (node.x > canvas.width) node.x = 0;
+                    if (node.y < 0) node.y = canvas.height;
+                    if (node.y > canvas.height) node.y = 0;
+
                     // Draw node
                     ctx.beginPath();
                     ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
@@ -683,14 +683,14 @@
                     ctx.globalAlpha = node.opacity;
                     ctx.fill();
                     ctx.globalAlpha = 1;
-                    
+
                     // Draw connections
                     for (let j = i + 1; j < nodes.length; j++) {
                         const otherNode = nodes[j];
                         const dx = otherNode.x - node.x;
                         const dy = otherNode.y - node.y;
                         const distance = Math.sqrt(dx * dx + dy * dy);
-                        
+
                         if (distance < 150) {
                             ctx.beginPath();
                             ctx.moveTo(node.x, node.y);
@@ -702,29 +702,47 @@
                         }
                     }
                 }
-                
-                requestAnimationFrame(drawNodes);
+
+                animationFrameId = requestAnimationFrame(drawNodes);
             }
-            
+
             drawNodes();
-            
+
             // Adjust on window resize
-            window.addEventListener('resize', () => {
+            const handleResize = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-            });
+            };
+            window.addEventListener('resize', handleResize);
+
+            // Return cleanup function
+            return () => {
+                 cancelAnimationFrame(animationFrameId);
+                 window.removeEventListener('resize', handleResize);
+                 if (canvasContainer.contains(canvas)) {
+                    canvasContainer.removeChild(canvas);
+                 }
+            };
         }
 
         // Initialize the rotation chart
         function initRotationChart() {
-            const ctx = document.getElementById('rotationChart').getContext('2d');
-            
+            const chartCanvas = document.getElementById('rotationChart');
+            if (!chartCanvas) return; // Exit if canvas not found
+            const ctx = chartCanvas.getContext('2d');
+             if (!ctx) return; // Exit if context cannot be created
+
+            // Destroy existing chart if it exists
+             if (Chart.getChart(chartCanvas)) {
+                 Chart.getChart(chartCanvas).destroy();
+             }
+
             // Calculate clockwise percentage based on rotation data
             const clockwiseCount = rotationsData.filter(r => r > 0).length;
             const counterClockwiseCount = rotationsData.length - clockwiseCount;
-            const clockwisePercentage = Math.round((clockwiseCount / rotationsData.length) * 100);
+            const clockwisePercentage = rotationsData.length > 0 ? Math.round((clockwiseCount / rotationsData.length) * 100) : 50;
             const counterClockwisePercentage = 100 - clockwisePercentage;
-            
+
             new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -763,30 +781,32 @@
         // Initialize Hawking Radiation animation
         function initHawkingAnimation() {
             const container = document.getElementById('hawking-animation');
-            
+             if (!container) return; // Exit if container not found
+             container.innerHTML = ''; // Clear previous particles
+
             for (let i = 0; i < 20; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'absolute w-2 h-2 rounded-full bg-white opacity-0';
-                
+
                 // Randomize position around the circle
                 const angle = Math.random() * Math.PI * 2;
-                const distance = 10 + Math.random() * 5;
-                const x = Math.cos(angle) * distance;
-                const y = Math.sin(angle) * distance;
-                
-                particle.style.left = `calc(50% + ${x}px)`;
-                particle.style.top = `calc(50% + ${y}px)`;
-                
+                const distance = 10 + Math.random() * 5; // Start closer to the center
+                const startX = Math.cos(angle) * distance;
+                const startY = Math.sin(angle) * distance;
+
+                particle.style.left = `calc(50% + ${startX}px)`;
+                particle.style.top = `calc(50% + ${startY}px)`;
+
                 // Randomize animation
                 const duration = 1 + Math.random() * 2;
                 const delay = Math.random() * 3;
-                const finalX = x * (5 + Math.random() * 5);
-                const finalY = y * (5 + Math.random() * 5);
-                
+                const finalX = startX * (5 + Math.random() * 5); // Move further out
+                const finalY = startY * (5 + Math.random() * 5);
+
                 particle.style.animation = `fadeInOut ${duration}s ease-out ${delay}s infinite`;
                 particle.style.setProperty('--tx', `${finalX}px`);
                 particle.style.setProperty('--ty', `${finalY}px`);
-                
+
                 container.appendChild(particle);
             }
         }
@@ -794,67 +814,79 @@
         // Initialize CTC animation
         function initCTCAnimation() {
             const dot = document.getElementById('timeloop-dot');
+            if (!dot) return; // Exit if element not found
+
             let angle = 0;
-            const radius = 64;
-            const center = { x: radius, y: radius };
+            const radius = 64; // Assuming parent container is 128x128
+            const center = { x: radius - 12, y: radius - 12 }; // Adjust for dot size (w-6 h-6 -> 24px)
             const speed = 0.03;
-            
+            let animationFrameId;
+
             function animateDot() {
                 angle += speed;
                 const x = center.x + Math.cos(angle) * radius;
                 const y = center.y + Math.sin(angle) * radius;
                 dot.style.left = `${x}px`;
                 dot.style.top = `${y}px`;
-                
-                requestAnimationFrame(animateDot);
+
+                animationFrameId = requestAnimationFrame(animateDot);
             }
-            
+
             animateDot();
+
+            // Return cleanup function
+             return () => {
+                 cancelAnimationFrame(animationFrameId);
+             };
         }
 
         // Initialize 3D Kerr black hole
         function initKerr3D() {
             const container = document.getElementById('kerr-3d-container');
+             if (!container) return { updateSpin: () => {}, cleanup: () => {} }; // Return dummy object if container not found
+             container.innerHTML = ''; // Clear previous renderer
+
             const width = container.clientWidth;
             const height = container.clientHeight;
-            
+             if (width === 0 || height === 0) return { updateSpin: () => {}, cleanup: () => {} }; // Exit if container has no size
+
             // Create scene
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
             camera.position.z = 5;
-            
+
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(width, height);
             container.appendChild(renderer.domElement);
-            
+
             // Black hole
             const blackHoleGeometry = new THREE.SphereGeometry(1, 32, 32);
             const blackHoleMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const blackHole = new THREE.Mesh(blackHoleGeometry, blackHoleMaterial);
             scene.add(blackHole);
-            
+
             // Ergosphere
             const ergosphereGeometry = new THREE.SphereGeometry(1.5, 32, 32);
-            const ergosphereMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0x5D5CDE, 
-                transparent: true, 
+            const ergosphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x5D5CDE,
+                transparent: true,
                 opacity: 0.2,
                 wireframe: true
             });
             const ergosphere = new THREE.Mesh(ergosphereGeometry, ergosphereMaterial);
             scene.add(ergosphere);
-            
+
             // Ring singularity
             const ringGeometry = new THREE.TorusGeometry(0.7, 0.05, 16, 100);
             const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xFF5722 });
             const ring = new THREE.Mesh(ringGeometry, ringMaterial);
             ring.rotation.x = Math.PI / 2;
             scene.add(ring);
-            
+
             // Accretion disk
             const diskGeometry = new THREE.RingGeometry(1.2, 3, 64);
-            const diskMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0xFFAB00, 
+            const diskMaterial = new THREE.MeshBasicMaterial({
+                color: 0xFFAB00,
                 side: THREE.DoubleSide,
                 transparent: true,
                 opacity: 0.5
@@ -862,56 +894,83 @@
             const disk = new THREE.Mesh(diskGeometry, diskMaterial);
             disk.rotation.x = Math.PI / 2;
             scene.add(disk);
-            
+
+            let currentSpin = 0.5; // Default spin
+             let animationFrameId;
+
             // Animation
             function animate() {
-                requestAnimationFrame(animate);
-                
-                blackHole.rotation.y += 0.01;
-                ergosphere.rotation.y += 0.005;
-                ring.rotation.z += 0.02;
-                disk.rotation.z += 0.005;
-                
+                animationFrameId = requestAnimationFrame(animate);
+
+                const spinSpeed = currentSpin * 0.02;
+                blackHole.rotation.y += 0.01; // Base rotation
+                ergosphere.rotation.y += spinSpeed / 2;
+                ring.rotation.z += spinSpeed;
+                disk.rotation.z += spinSpeed / 4;
+
                 renderer.render(scene, camera);
             }
-            
+
             animate();
-            
+
             // Handle resize
-            window.addEventListener('resize', () => {
-                const width = container.clientWidth;
-                const height = container.clientHeight;
-                
-                camera.aspect = width / height;
-                camera.updateProjectionMatrix();
-                renderer.setSize(width, height);
-            });
-            
+             const handleResize = () => {
+                 const newWidth = container.clientWidth;
+                 const newHeight = container.clientHeight;
+                 if (newWidth > 0 && newHeight > 0) {
+                     camera.aspect = newWidth / newHeight;
+                     camera.updateProjectionMatrix();
+                     renderer.setSize(newWidth, newHeight);
+                 }
+             };
+            window.addEventListener('resize', handleResize);
+
+            // Cleanup function
+            const cleanup = () => {
+                 cancelAnimationFrame(animationFrameId);
+                 window.removeEventListener('resize', handleResize);
+                 scene.remove(blackHole, ergosphere, ring, disk);
+                 blackHoleGeometry.dispose();
+                 blackHoleMaterial.dispose();
+                 ergosphereGeometry.dispose();
+                 ergosphereMaterial.dispose();
+                 ringGeometry.dispose();
+                 ringMaterial.dispose();
+                 diskGeometry.dispose();
+                 diskMaterial.dispose();
+                 renderer.dispose();
+                 if (container.contains(renderer.domElement)) {
+                    container.removeChild(renderer.domElement);
+                 }
+            };
+
             return {
-                scene, camera, renderer, blackHole, ergosphere, ring, disk,
                 updateSpin: function(spin) {
-                    const spinSpeed = spin * 0.02;
-                    ring.rotation.z += spinSpeed;
-                    disk.rotation.z += spinSpeed / 4;
-                    ergosphere.rotation.y += spinSpeed / 2;
-                }
+                    currentSpin = spin;
+                },
+                cleanup: cleanup
             };
         }
 
         // Initialize Vector Field
         function initVectorField() {
             const container = document.getElementById('vector-field');
+             if (!container) return () => {}; // Return dummy cleanup if container not found
+             container.innerHTML = ''; // Clear previous canvas
+
             const width = container.clientWidth;
             const height = container.clientHeight;
-            
+            if (width === 0 || height === 0) return () => {}; // Exit if container has no size
+
             const canvas = document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
             container.appendChild(canvas);
-            
+
             const ctx = canvas.getContext('2d');
+             if (!ctx) return () => {}; // Exit if context cannot be created
             const arrows = [];
-            
+
             // Create arrows
             for (let x = 20; x < width; x += 40) {
                 for (let y = 20; y < height; y += 40) {
@@ -923,34 +982,35 @@
                     });
                 }
             }
-            
+
+             let animationFrameId;
             function drawVectorField() {
                 ctx.clearRect(0, 0, width, height);
-                
+
                 // Draw center point
                 ctx.beginPath();
                 ctx.arc(width/2, height/2, 5, 0, Math.PI * 2);
                 ctx.fillStyle = '#5D5CDE';
                 ctx.fill();
-                
+
                 // Draw vectors
                 ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111';
                 ctx.lineWidth = 1;
-                
+
                 for (const arrow of arrows) {
                     const length = arrow.length * (1 + 0.3 * Math.sin(performance.now() / 1000 + arrow.phase));
                     const x2 = arrow.x + Math.cos(arrow.angle) * length;
                     const y2 = arrow.y + Math.sin(arrow.angle) * length;
-                    
+
                     ctx.beginPath();
                     ctx.moveTo(arrow.x, arrow.y);
                     ctx.lineTo(x2, y2);
-                    
+
                     // Arrow head
                     const headAngle1 = arrow.angle - Math.PI * 0.8;
                     const headAngle2 = arrow.angle + Math.PI * 0.8;
                     const headLength = 3;
-                    
+
                     ctx.lineTo(
                         x2 + Math.cos(headAngle1) * headLength,
                         y2 + Math.sin(headAngle1) * headLength
@@ -960,45 +1020,59 @@
                         x2 + Math.cos(headAngle2) * headLength,
                         y2 + Math.sin(headAngle2) * headLength
                     );
-                    
+
                     ctx.stroke();
                 }
-                
-                requestAnimationFrame(drawVectorField);
+
+                animationFrameId = requestAnimationFrame(drawVectorField);
             }
-            
+
             drawVectorField();
+
+             // Cleanup function
+             return () => {
+                 cancelAnimationFrame(animationFrameId);
+                 if (container.contains(canvas)) {
+                    container.removeChild(canvas);
+                 }
+             };
         }
 
         // Initialize Kerr Spawner visualization
         function initKerrSpawner() {
             const container = document.getElementById('kerr-spawner-visual');
+             if (!container) return { spawnSubSim: () => {}, cleanup: () => {} }; // Return dummy object if container not found
+             container.innerHTML = ''; // Clear previous canvas
+
             const width = container.clientWidth;
             const height = container.clientHeight;
-            
+            if (width === 0 || height === 0) return { spawnSubSim: () => {}, cleanup: () => {} }; // Exit if container has no size
+
             const canvas = document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
             container.appendChild(canvas);
-            
+
             const ctx = canvas.getContext('2d');
+             if (!ctx) return { spawnSubSim: () => {}, cleanup: () => {} }; // Exit if context cannot be created
+
             const mainBlackHole = {
                 x: width / 2,
                 y: height / 2,
                 radius: 15,
                 spin: 0
             };
-            
+
             const subSims = [];
-            
+
             function spawnSubSim() {
                 if (subSims.length < 5) {
                     const angle = Math.random() * Math.PI * 2;
                     const distance = 30 + Math.random() * 20;
-                    
+
                     // Use rotation data if available, otherwise random
-                    const subSimSpin = rotationsData[subSims.length] || (Math.random() * 2 - 1);
-                    
+                    const subSimSpin = rotationsData[subSims.length % rotationsData.length] || (Math.random() * 2 - 1);
+
                     subSims.push({
                         x: mainBlackHole.x + Math.cos(angle) * distance,
                         y: mainBlackHole.y + Math.sin(angle) * distance,
@@ -1010,18 +1084,19 @@
                     });
                 }
             }
-            
+
             // Initial spawns
             spawnSubSim();
             spawnSubSim();
-            
+
+             let animationFrameId;
             function drawKerrSpawner() {
                 ctx.clearRect(0, 0, width, height);
-                
+
                 // Draw connections
                 ctx.strokeStyle = '#5D5CDE';
                 ctx.lineWidth = 1;
-                
+
                 for (const subSim of subSims) {
                     ctx.beginPath();
                     ctx.moveTo(mainBlackHole.x, mainBlackHole.y);
@@ -1030,7 +1105,7 @@
                     ctx.stroke();
                     ctx.globalAlpha = 1;
                 }
-                
+
                 // Draw main black hole
                 ctx.beginPath();
                 ctx.arc(mainBlackHole.x, mainBlackHole.y, mainBlackHole.radius, 0, Math.PI * 2);
@@ -1039,23 +1114,23 @@
                 ctx.strokeStyle = '#5D5CDE';
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                
+
                 // Draw ring
                 ctx.beginPath();
                 ctx.arc(mainBlackHole.x, mainBlackHole.y, mainBlackHole.radius * 1.3, 0, Math.PI * 2);
                 ctx.strokeStyle = '#FF5722';
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                
+
                 // Update and draw sub sims
                 for (let i = 0; i < subSims.length; i++) {
                     const subSim = subSims[i];
-                    
+
                     // Update position
                     subSim.angle += subSim.orbitSpeed;
                     subSim.x = mainBlackHole.x + Math.cos(subSim.angle) * subSim.distance;
                     subSim.y = mainBlackHole.y + Math.sin(subSim.angle) * subSim.distance;
-                    
+
                     // Draw sub sim
                     ctx.beginPath();
                     ctx.arc(subSim.x, subSim.y, subSim.radius, 0, Math.PI * 2);
@@ -1064,7 +1139,7 @@
                     ctx.strokeStyle = '#3F3F94';
                     ctx.lineWidth = 1;
                     ctx.stroke();
-                    
+
                     // Draw spin indicator
                     const spinRadius = subSim.radius * 1.3;
                     ctx.beginPath();
@@ -1072,24 +1147,24 @@
                     ctx.strokeStyle = subSim.spin > 0 ? '#5D5CDE' : '#9E9DFF';
                     ctx.lineWidth = 1;
                     ctx.stroke();
-                    
+
                     // Draw arrow to indicate spin direction
                     const arrowStart = subSim.spin > 0 ? 0 : Math.PI;
                     const arrowEnd = subSim.spin > 0 ? Math.PI / 2 : 3 * Math.PI / 2;
-                    
+
                     ctx.beginPath();
                     ctx.arc(subSim.x, subSim.y, spinRadius, arrowStart, arrowEnd);
                     ctx.strokeStyle = subSim.spin > 0 ? '#5D5CDE' : '#9E9DFF';
                     ctx.lineWidth = 2;
                     ctx.stroke();
-                    
+
                     // Arrow head
                     const headX = subSim.x + Math.cos(arrowEnd) * spinRadius;
                     const headY = subSim.y + Math.sin(arrowEnd) * spinRadius;
                     const headAngle1 = arrowEnd - Math.PI * 0.8;
                     const headAngle2 = arrowEnd + Math.PI * 0.8;
                     const headLength = 3;
-                    
+
                     ctx.beginPath();
                     ctx.moveTo(headX, headY);
                     ctx.lineTo(
@@ -1103,28 +1178,40 @@
                     );
                     ctx.stroke();
                 }
-                
-                requestAnimationFrame(drawKerrSpawner);
+
+                animationFrameId = requestAnimationFrame(drawKerrSpawner);
             }
-            
+
             drawKerrSpawner();
-            
-            return {
-                spawnSubSim: spawnSubSim
-            };
+
+             // Cleanup function
+             return {
+                 spawnSubSim: spawnSubSim,
+                 cleanup: () => {
+                     cancelAnimationFrame(animationFrameId);
+                     if (container.contains(canvas)) {
+                        container.removeChild(canvas);
+                     }
+                 }
+             };
         }
 
         // Initialize Sim-in-Sim
         function initSimInSim() {
             const container = document.querySelector('.recursive-container');
+             if (!container) return () => {}; // Return dummy cleanup if container not found
+             container.innerHTML = ''; // Clear previous elements
+
             const maxDepth = 3;
-            
+
             function createRecursiveCircle(depth = 0, parent = container) {
                 if (depth >= maxDepth) return;
-                
+
                 const circle = document.createElement('div');
-                const size = parent.clientWidth * 0.7;
-                
+                const parentSize = parent.clientWidth || parseFloat(parent.style.width) || 96; // Fallback size
+                const size = parentSize * 0.7;
+                 if (size < 5) return; // Stop if too small
+
                 circle.style.width = `${size}px`;
                 circle.style.height = `${size}px`;
                 circle.style.position = 'absolute';
@@ -1135,7 +1222,7 @@
                 circle.style.border = '2px solid #5D5CDE';
                 circle.style.boxSizing = 'border-box';
                 circle.style.animation = `spin ${8 + depth * 4}s linear infinite${depth % 2 === 0 ? '' : ' reverse'}`;
-                
+
                 // Add a singularity dot
                 const dot = document.createElement('div');
                 dot.style.position = 'absolute';
@@ -1145,97 +1232,97 @@
                 dot.style.backgroundColor = '#FF5722';
                 dot.style.top = '0';
                 dot.style.left = '50%';
-                dot.style.transform = 'translateX(-50%)';
-                
+                dot.style.transform = 'translateX(-50%) translateY(-50%)'; // Center dot better
+
                 circle.appendChild(dot);
                 parent.appendChild(circle);
-                
+
                 createRecursiveCircle(depth + 1, circle);
             }
-            
+
             createRecursiveCircle();
+
+             // Cleanup function (removes elements)
+             return () => {
+                 container.innerHTML = '';
+             };
         }
 
         // Initialize Fourier Tool
         function initFourierTool() {
+            const container = document.getElementById('fourier-container');
+             if (!container) return { cleanup: () => {} }; // Return dummy object if container not found
             const canvas = document.getElementById('fourierCanvas');
+             if (!canvas) return { cleanup: () => {} }; // Exit if canvas not found
+
             const ctx = canvas.getContext('2d');
-            canvas.width = document.getElementById('fourier-container').clientWidth;
-            canvas.height = document.getElementById('fourier-container').clientHeight;
-            
+             if (!ctx) return { cleanup: () => {} }; // Exit if context cannot be created
+
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+             if (canvas.width === 0 || canvas.height === 0) return { cleanup: () => {} }; // Exit if container has no size
+
             // FFT calculation based on rotation data
             const fft = (arr) => {
+                 if (!arr || arr.length === 0) return []; // Handle empty array
                 const N = arr.length;
                 const X = [];
                 for (let k = 0; k < N; k++) {
-                    let sum = 0;
+                    let sumRe = 0;
+                    let sumIm = 0;
                     for (let n = 0; n < N; n++) {
-                        sum += arr[n] * Math.cos(2 * Math.PI * k * n / N);
+                         const angle = -2 * Math.PI * k * n / N;
+                        sumRe += arr[n] * Math.cos(angle);
+                        sumIm += arr[n] * Math.sin(angle);
                     }
-                    X.push(Math.abs(sum));
+                    X.push(Math.sqrt(sumRe * sumRe + sumIm * sumIm)); // Magnitude
                 }
                 return X;
             };
-            
+
             const amplitudes = fft(rotationsData);
             const frequencies = Array.from({ length: rotationsData.length }, (_, i) => i / rotationsData.length);
-            
+
             let time = 0;
             const timeStep = 0.05;
-            
+            let animationFrameId;
+
             function drawFourier() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
+
                 // Background grid
                 ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#333333' : '#DDDDDD';
                 ctx.lineWidth = 1;
-                
+
                 // Vertical grid lines
                 for (let x = 0; x < canvas.width; x += 50) {
-                    ctx.beginPath();
-                    ctx.moveTo(x, 0);
-                    ctx.lineTo(x, canvas.height);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
                 }
-                
                 // Horizontal grid lines
                 for (let y = 0; y < canvas.height; y += 50) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(canvas.width, y);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
                 }
-                
+
                 // Draw center line
                 ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#555555' : '#AAAAAA';
                 ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(0, canvas.height / 2);
-                ctx.lineTo(canvas.width, canvas.height / 2);
-                ctx.stroke();
-                
-                // Draw FFT amplitudes
-                const points = [];
-                const maxAmplitude = Math.max(...amplitudes.slice(1)); // Skip DC component
-                
-                // Draw frequency spectrum
-                ctx.strokeStyle = '#5D5CDE';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                
-                for (let i = 1; i < frequencies.length; i++) {
-                    const x = (i / (frequencies.length - 1)) * canvas.width;
-                    const normalizedAmplitude = amplitudes[i] / maxAmplitude;
-                    const y = canvas.height / 2 - normalizedAmplitude * (canvas.height / 3);
-                    
-                    if (i === 1) {
-                        ctx.moveTo(x, canvas.height / 2);
-                        ctx.lineTo(x, y);
-                    } else {
-                        ctx.moveTo(x, canvas.height / 2);
-                        ctx.lineTo(x, y);
-                    }
-                    
+                ctx.beginPath(); ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2); ctx.stroke();
+
+                // Draw FFT amplitudes (only first half is meaningful for real input)
+                const maxAmplitude = amplitudes.length > 1 ? Math.max(...amplitudes.slice(1, Math.ceil(amplitudes.length / 2))) : 1;
+
+                // Draw frequency spectrum bars
+                ctx.fillStyle = '#5D5CDE';
+                const barWidth = canvas.width / Math.ceil(frequencies.length / 2);
+
+                for (let i = 1; i < Math.ceil(frequencies.length / 2); i++) {
+                    const x = (i - 0.5) * barWidth; // Center the bar
+                    const normalizedAmplitude = maxAmplitude > 0 ? amplitudes[i] / maxAmplitude : 0;
+                    const barHeight = normalizedAmplitude * (canvas.height / 3);
+                    const y = canvas.height / 2 - barHeight;
+
+                    ctx.fillRect(x, y, barWidth * 0.8, barHeight); // Draw bars
+
                     // Draw frequency labels for significant peaks
                     if (normalizedAmplitude > 0.5) {
                         ctx.font = '10px Arial';
@@ -1243,58 +1330,65 @@
                         ctx.fillText(`f=${i}`, x + 5, y - 5);
                     }
                 }
-                ctx.stroke();
-                
-                // Display rotation pattern visualization
-                ctx.strokeStyle = 'rgba(93, 92, 222, 0.5)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                
-                const pattern = [];
-                for (let i = 0; i < rotationsData.length; i++) {
-                    const t = i / rotationsData.length;
-                    let y = 0;
-                    
-                    // Synthesize waveform from significant frequencies
-                    for (let k = 1; k < Math.min(10, amplitudes.length); k++) {
-                        if (amplitudes[k] / maxAmplitude > 0.1) {
-                            y += (amplitudes[k] / maxAmplitude) * Math.sin(2 * Math.PI * k * t + time);
-                        }
-                    }
-                    
-                    pattern.push({
-                        x: t * canvas.width,
-                        y: canvas.height / 2 - y * (canvas.height / 6)
-                    });
-                }
-                
-                ctx.moveTo(pattern[0].x, pattern[0].y);
-                for (let i = 1; i < pattern.length; i++) {
-                    ctx.lineTo(pattern[i].x, pattern[i].y);
-                }
-                
-                ctx.stroke();
-                
-                // Draw original rotation data as dots
-                ctx.fillStyle = '#FF5722';
-                for (let i = 0; i < rotationsData.length; i++) {
-                    const x = (i / (rotationsData.length - 1)) * canvas.width;
-                    const y = canvas.height * 0.8 - rotationsData[i] * 20;
-                    
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
+
+                // Display rotation pattern visualization (Synthesized waveform)
+                 if (amplitudes.length > 1) {
+                     ctx.strokeStyle = 'rgba(93, 92, 222, 0.5)';
+                     ctx.lineWidth = 2;
+                     ctx.beginPath();
+
+                     const pattern = [];
+                     for (let i = 0; i < rotationsData.length; i++) {
+                         const t = i / rotationsData.length;
+                         let yWave = 0;
+
+                         // Synthesize waveform from significant frequencies
+                         for (let k = 1; k < Math.min(10, Math.ceil(amplitudes.length / 2)); k++) {
+                             if (maxAmplitude > 0 && amplitudes[k] / maxAmplitude > 0.1) {
+                                 // Need phase information for accurate synthesis, approximating here
+                                 yWave += (amplitudes[k] / maxAmplitude) * Math.sin(2 * Math.PI * k * t + time);
+                             }
+                         }
+
+                         pattern.push({
+                             x: t * canvas.width,
+                             y: canvas.height * 0.75 - yWave * (canvas.height / 8) // Position waveform lower
+                         });
+                     }
+
+                     ctx.moveTo(pattern[0].x, pattern[0].y);
+                     for (let i = 1; i < pattern.length; i++) {
+                         ctx.lineTo(pattern[i].x, pattern[i].y);
+                     }
+                     ctx.stroke();
+                 }
+
+
+                // Draw original rotation data as dots (if available)
+                 if (rotationsData.length > 0) {
+                     ctx.fillStyle = '#FF5722';
+                     for (let i = 0; i < rotationsData.length; i++) {
+                         const x = (i / (rotationsData.length - 1)) * canvas.width;
+                         const y = canvas.height * 0.9 - rotationsData[i] * 10; // Position dots at the bottom
+
+                         ctx.beginPath();
+                         ctx.arc(x, y, 3, 0, Math.PI * 2);
+                         ctx.fill();
+                     }
+                 }
+
+
                 time += timeStep;
-                requestAnimationFrame(drawFourier);
+                animationFrameId = requestAnimationFrame(drawFourier);
             }
-            
-            let animationFrameId = requestAnimationFrame(drawFourier);
-            
+
+            animationFrameId = requestAnimationFrame(drawFourier);
+
             return {
                 cleanup: () => {
                     cancelAnimationFrame(animationFrameId);
+                     // Optionally clear the canvas
+                     // ctx.clearRect(0, 0, canvas.width, canvas.height);
                 }
             };
         }
@@ -1302,211 +1396,245 @@
         // Initialize Universe Tree Visualization
         function initUniverseTree() {
             const container = document.getElementById('universe-tree-container');
-            container.innerHTML = '';
-            
+            if (!container) return () => {}; // Return dummy cleanup if container not found
+            container.innerHTML = ''; // Clear previous SVG
+
             // Create SVG
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('width', '100%');
             svg.setAttribute('height', '100%');
+            svg.setAttribute('viewBox', `0 0 ${container.clientWidth} ${container.clientHeight}`); // Add viewBox for responsiveness
             container.appendChild(svg);
-            
+
             // Universe data with rotation information from uploaded data
             const universes = [
                 { id: 0, name: 'Prime', parentId: null, size: 30, children: [1, 2, 3], spin: 1 },
-                { id: 1, name: 'Alpha', parentId: 0, size: 20, children: [4, 5], spin: rotationsData[0] || 1 },
-                { id: 2, name: 'Beta', parentId: 0, size: 22, children: [6], spin: rotationsData[1] || -1 },
-                { id: 3, name: 'Gamma', parentId: 0, size: 18, children: [], spin: rotationsData[2] || 1 },
-                { id: 4, name: 'Alpha-1', parentId: 1, size: 15, children: [], spin: rotationsData[3] || -1 },
-                { id: 5, name: 'Alpha-2', parentId: 1, size: 14, children: [], spin: rotationsData[4] || 1 },
-                { id: 6, name: 'Beta-1', parentId: 2, size: 16, children: [7], spin: rotationsData[5] || -1 },
-                { id: 7, name: 'Beta-1-A', parentId: 6, size: 12, children: [], spin: rotationsData[6] || 1 }
+                { id: 1, name: 'Alpha', parentId: 0, size: 20, children: [4, 5], spin: rotationsData[0 % rotationsData.length] || 1 },
+                { id: 2, name: 'Beta', parentId: 0, size: 22, children: [6], spin: rotationsData[1 % rotationsData.length] || -1 },
+                { id: 3, name: 'Gamma', parentId: 0, size: 18, children: [], spin: rotationsData[2 % rotationsData.length] || 1 },
+                { id: 4, name: 'Alpha-1', parentId: 1, size: 15, children: [], spin: rotationsData[3 % rotationsData.length] || -1 },
+                { id: 5, name: 'Alpha-2', parentId: 1, size: 14, children: [], spin: rotationsData[4 % rotationsData.length] || 1 },
+                { id: 6, name: 'Beta-1', parentId: 2, size: 16, children: [7], spin: rotationsData[5 % rotationsData.length] || -1 },
+                { id: 7, name: 'Beta-1-A', parentId: 6, size: 12, children: [], spin: rotationsData[6 % rotationsData.length] || 1 }
             ];
-            
+
             // Layout calculation
             const width = container.clientWidth;
             const height = container.clientHeight;
+            if (width === 0 || height === 0) return () => {}; // Exit if container has no size
+
             const centerX = width / 2;
-            const centerY = height / 2;
+            const centerY = 50; // Start root node near the top
             const levels = {};
-            
-            // Group by parent level
-            function assignLevels(universeId, level = 0) {
-                if (!levels[level]) levels[level] = [];
-                levels[level].push(universeId);
-                
-                const universe = universes.find(u => u.id === universeId);
-                universe.level = level;
-                
-                for (const childId of universe.children) {
-                    assignLevels(childId, level + 1);
-                }
+            const nodes = {}; // Store node positions
+
+            // Build tree structure
+            const root = universes.find(u => u.parentId === null);
+            if (!root) return () => {}; // Exit if no root found
+
+            function buildTree(node, level = 0, siblings = 1, index = 0) {
+                 if (!levels[level]) levels[level] = [];
+                 levels[level].push(node.id);
+                 node.level = level;
+
+                 // Basic horizontal positioning (can be improved with tree layout algorithms)
+                 const levelWidth = width * 0.8;
+                 const xOffset = (index - (siblings - 1) / 2) * (levelWidth / Math.max(1, siblings));
+
+                 node.x = centerX + xOffset;
+                 node.y = centerY + level * 100; // Vertical spacing between levels
+                 nodes[node.id] = { x: node.x, y: node.y };
+
+                 const children = universes.filter(u => u.parentId === node.id);
+                 children.forEach((child, idx) => {
+                     buildTree(child, level + 1, children.length, idx);
+                 });
             }
-            
-            assignLevels(0);
-            
-            // Calculate positions
-            const maxLevel = Math.max(...Object.keys(levels).map(Number));
-            const levelRadius = Math.min(width, height) * 0.4 / (maxLevel + 1);
-            
-            for (const universe of universes) {
-                const levelCount = levels[universe.level].length;
-                const indexInLevel = levels[universe.level].indexOf(universe.id);
-                const angle = (indexInLevel / levelCount) * Math.PI * 2;
-                
-                universe.x = centerX + Math.cos(angle) * levelRadius * universe.level;
-                universe.y = centerY + Math.sin(angle) * levelRadius * universe.level;
-            }
-            
+
+            buildTree(root);
+
+
             // Draw connections
             for (const universe of universes.filter(u => u.parentId !== null)) {
-                const parent = universes.find(u => u.id === universe.parentId);
-                
+                const parentPos = nodes[universe.parentId];
+                const childPos = nodes[universe.id];
+                if (!parentPos || !childPos) continue; // Skip if positions aren't calculated
+
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', parent.x);
-                line.setAttribute('y1', parent.y);
-                line.setAttribute('x2', universe.x);
-                line.setAttribute('y2', universe.y);
+                line.setAttribute('x1', parentPos.x);
+                line.setAttribute('y1', parentPos.y);
+                line.setAttribute('x2', childPos.x);
+                line.setAttribute('y2', childPos.y);
                 line.setAttribute('stroke', '#5D5CDE');
                 line.setAttribute('stroke-width', '2');
                 line.setAttribute('stroke-opacity', '0.5');
                 svg.appendChild(line);
             }
-            
+
             // Draw nodes
             for (const universe of universes) {
+                 const pos = nodes[universe.id];
+                 if (!pos) continue; // Skip if position not calculated
+
                 const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 g.classList.add('universe-node');
-                
+
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', universe.x);
-                circle.setAttribute('cy', universe.y);
+                circle.setAttribute('cx', pos.x);
+                circle.setAttribute('cy', pos.y);
                 circle.setAttribute('r', universe.size / 2);
-                
+
                 // Color based on spin direction from rotation data
                 const fillColor = universe.spin > 0 ? '#5D5CDE' : '#3F3F94';
                 circle.setAttribute('fill', fillColor);
-                
+
                 const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                label.setAttribute('x', universe.x);
-                label.setAttribute('y', universe.y + universe.size / 2 + 15);
+                label.setAttribute('x', pos.x);
+                label.setAttribute('y', pos.y + universe.size / 2 + 15);
                 label.setAttribute('text-anchor', 'middle');
                 label.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111');
                 label.setAttribute('font-size', '12');
                 label.textContent = universe.name;
-                
+
                 g.appendChild(circle);
                 g.appendChild(label);
                 svg.appendChild(g);
-                
+
                 // Add animation for spin direction
                 const spinAnimation = document.createElementNS('http://www.w3.org/2000/svg', 'animateTransform');
                 spinAnimation.setAttribute('attributeName', 'transform');
                 spinAnimation.setAttribute('attributeType', 'XML');
                 spinAnimation.setAttribute('type', 'rotate');
-                
+
                 // Direction based on spin value
                 const duration = 10 + Math.random() * 5;
-                const from = `0 ${universe.x} ${universe.y}`;
-                const to = universe.spin > 0 ? 
-                    `360 ${universe.x} ${universe.y}` : 
-                    `-360 ${universe.x} ${universe.y}`;
-                
+                const from = `0 ${pos.x} ${pos.y}`;
+                const to = universe.spin > 0 ?
+                    `360 ${pos.x} ${pos.y}` :
+                    `-360 ${pos.x} ${pos.y}`;
+
                 spinAnimation.setAttribute('from', from);
                 spinAnimation.setAttribute('to', to);
                 spinAnimation.setAttribute('dur', `${duration}s`);
                 spinAnimation.setAttribute('repeatCount', 'indefinite');
-                
+
                 // Add a spin indicator ring
                 const spinRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                spinRing.setAttribute('cx', universe.x);
-                spinRing.setAttribute('cy', universe.y);
+                spinRing.setAttribute('cx', pos.x);
+                spinRing.setAttribute('cy', pos.y);
                 spinRing.setAttribute('r', universe.size / 2 + 5);
                 spinRing.setAttribute('fill', 'none');
                 spinRing.setAttribute('stroke', universe.spin > 0 ? '#5D5CDE' : '#9E9DFF');
                 spinRing.setAttribute('stroke-width', '1');
                 spinRing.setAttribute('stroke-dasharray', '3,3');
                 spinRing.appendChild(spinAnimation);
-                
+
                 svg.appendChild(spinRing);
-                
+
                 // Tooltip on hover
-                g.addEventListener('mouseover', () => {
+                g.addEventListener('mouseover', (e) => {
+                     // Remove existing tooltips first
+                     svg.querySelectorAll('.tooltip').forEach(tip => tip.remove());
+
                     const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                    tooltip.classList.add('tooltip');
-                    
+                    tooltip.classList.add('tooltip'); // Add class for easy removal
+
                     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                    rect.setAttribute('x', universe.x + universe.size / 2 + 5);
-                    rect.setAttribute('y', universe.y - 30);
-                    rect.setAttribute('width', '120');
-                    rect.setAttribute('height', '70');
+                     const textWidth = 120; // Estimated width
+                     const textHeight = 50; // Estimated height
+                     let tooltipX = pos.x + universe.size / 2 + 10;
+                     let tooltipY = pos.y - textHeight / 2;
+
+                     // Adjust position if tooltip goes off-screen
+                     if (tooltipX + textWidth > width) {
+                         tooltipX = pos.x - universe.size / 2 - textWidth - 10;
+                     }
+                     if (tooltipY < 0) {
+                         tooltipY = pos.y + 10;
+                     }
+                     if (tooltipY + textHeight > height) {
+                          tooltipY = pos.y - textHeight - 10;
+                     }
+
+
+                    rect.setAttribute('x', tooltipX);
+                    rect.setAttribute('y', tooltipY);
+                    rect.setAttribute('width', textWidth);
+                    rect.setAttribute('height', textHeight);
                     rect.setAttribute('rx', '5');
                     rect.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#242424' : '#F4F4F8');
                     rect.setAttribute('stroke', '#5D5CDE');
-                    
+                    rect.setAttribute('opacity', '0.9');
+
                     const tooltipTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    tooltipTitle.setAttribute('x', universe.x + universe.size / 2 + 10);
-                    tooltipTitle.setAttribute('y', universe.y - 10);
+                    tooltipTitle.setAttribute('x', tooltipX + 10);
+                    tooltipTitle.setAttribute('y', tooltipY + 18); // Adjusted Y for title
                     tooltipTitle.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111');
                     tooltipTitle.setAttribute('font-size', '12');
                     tooltipTitle.setAttribute('font-weight', 'bold');
                     tooltipTitle.textContent = universe.name;
-                    
-                    const tooltipLevel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    tooltipLevel.setAttribute('x', universe.x + universe.size / 2 + 10);
-                    tooltipLevel.setAttribute('y', universe.y + 10);
-                    tooltipLevel.setAttribute('fill', document.documentElement.classList.contains('dark') ? '#E0E0E0' : '#111111');
-                    tooltipLevel.setAttribute('font-size', '10');
-                    tooltipLevel.textContent = `Level: ${universe.level}`;
-                    
+
                     const tooltipSpin = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    tooltipSpin.setAttribute('x', universe.x + universe.size / 2 + 10);
-                    tooltipSpin.setAttribute('y', universe.y + 25);
+                    tooltipSpin.setAttribute('x', tooltipX + 10);
+                    tooltipSpin.setAttribute('y', tooltipY + 36); // Adjusted Y for spin info
                     tooltipSpin.setAttribute('fill', universe.spin > 0 ? '#5D5CDE' : '#9E9DFF');
                     tooltipSpin.setAttribute('font-size', '10');
                     tooltipSpin.textContent = `Spin: ${universe.spin > 0 ? 'Clockwise' : 'Counterclockwise'}`;
-                    
+
                     tooltip.appendChild(rect);
                     tooltip.appendChild(tooltipTitle);
-                    tooltip.appendChild(tooltipLevel);
                     tooltip.appendChild(tooltipSpin);
-                    svg.appendChild(tooltip);
-                    
+                    svg.appendChild(tooltip); // Append tooltip to SVG, not group
+
                     g.addEventListener('mouseleave', () => {
-                        svg.removeChild(tooltip);
-                    });
+                        tooltip.remove(); // Use remove() which is safer
+                    }, { once: true }); // Remove listener after first leave
                 });
             }
+
+             // Cleanup function
+             return () => {
+                 container.innerHTML = ''; // Simply clear the SVG container
+             };
         }
 
         // Initialize 5D Gateway Visualization
         function init5DGateway() {
             console.log("Initializing 5D Gateway");
             const container = document.getElementById('gateway-5d-container');
-            
+             if (!container) return () => {}; // Return dummy cleanup if container not found
+             container.innerHTML = ''; // Clear previous renderer
+
             // Show the gateway info
             const infoBox = document.getElementById('gateway-info');
-            infoBox.classList.remove('hidden');
-            
+            if (infoBox) infoBox.classList.remove('hidden');
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            if (width === 0 || height === 0) return () => {}; // Exit if container has no size
+
             // Setup 5D Gateway visualization with Three.js
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(65, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const camera = new THREE.PerspectiveCamera(65, width / height, 0.1, 1000);
             camera.position.z = 10;
-            
-            const renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // Added alpha
+            renderer.setSize(width, height);
+             renderer.setClearColor(0x000000, 0); // Set clear color to transparent
             container.appendChild(renderer.domElement);
-            
+
             // Kerr-Ring-Singularität
             const ringGeometry = new THREE.TorusGeometry(2.2, 0.3, 32, 100);
-            const ringMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x00ff99, 
-                emissive: 0x00ff99, 
-                metalness: 0.8, 
-                roughness: 0.3 
+            const ringMaterial = new THREE.MeshStandardMaterial({
+                color: 0x00ff99,
+                emissive: 0x00ff99,
+                metalness: 0.8,
+                roughness: 0.3,
+                 emissiveIntensity: 0.5 // Initial intensity
             });
             const ring = new THREE.Mesh(ringGeometry, ringMaterial);
             scene.add(ring);
-            
+
             // 5D-Gateway-Vortex
             const vortexGeometry = new THREE.SphereGeometry(1.5, 32, 32);
             const vortexMaterial = new THREE.MeshStandardMaterial({
@@ -1514,16 +1642,17 @@
                 emissive: 0x0044ff,
                 transparent: true,
                 opacity: 0.3,
-                wireframe: true
+                wireframe: true,
+                 emissiveIntensity: 0.5 // Initial intensity
             });
             const vortex = new THREE.Mesh(vortexGeometry, vortexMaterial);
             scene.add(vortex);
-            
+
             // Teilchenstrom
             const particles = [];
             const particleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
             const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            
+
             for (let i = 0; i < 100; i++) {
                 const particle = new THREE.Mesh(particleGeometry, particleMaterial);
                 particle.userData = {
@@ -1533,273 +1662,302 @@
                     speed: 0.01 + Math.random() * 0.01,
                     rIndex: Math.floor(Math.random() * kerrParams.length)
                 };
+                 // Initial position
+                 particle.position.x = Math.cos(particle.userData.angle) * particle.userData.radius;
+                 particle.position.z = Math.sin(particle.userData.angle) * particle.userData.radius;
+                 particle.position.y = particle.userData.height;
+
                 scene.add(particle);
                 particles.push(particle);
             }
-            
+
             // Licht
             const ambientLight = new THREE.AmbientLight(0x444444);
             const pointLight = new THREE.PointLight(0x00ff99, 1);
             pointLight.position.set(5, 5, 5);
             scene.add(ambientLight);
             scene.add(pointLight);
-            
+
             // Interaktive Gateway-Aktivierung
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
-            
-            renderer.domElement.addEventListener('click', (event) => {
+             let isActivated = false; // Track activation state
+
+            const handleClick = (event) => {
                 // Berechne normalisierte Mausposition
                 const rect = renderer.domElement.getBoundingClientRect();
                 mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
                 mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-                
+
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = raycaster.intersectObject(vortex);
-                
+
                 if (intersects.length > 0) {
-                    vortexMaterial.color.set(0xff8800);
-                    document.getElementById('status-text').textContent = "5D Gateway aktiviert! Interdimensionaler Zugang möglich.";
+                     isActivated = !isActivated; // Toggle activation
+                     vortexMaterial.color.set(isActivated ? 0xff8800 : 0x0044ff); // Change color on activation
+                     vortexMaterial.emissive.set(isActivated ? 0xff8800 : 0x0044ff);
+                     vortexMaterial.emissiveIntensity = isActivated ? 0.8 : 0.5;
+                     ringMaterial.emissiveIntensity = isActivated ? 0.8 : 0.5;
+                    document.getElementById('status-text').textContent = isActivated
+                         ? "5D Gateway aktiviert! Interdimensionaler Zugang möglich."
+                         : "5D Gateway deaktiviert.";
                 }
-            });
-            
+            };
+            renderer.domElement.addEventListener('click', handleClick);
+
             // Animation-Loop
             const clock = new THREE.Clock();
             let animationFrameId;
-            
+
             function animate() {
                 animationFrameId = requestAnimationFrame(animate);
                 const t = clock.getElapsedTime();
-                
+
                 // Pulsation des Vortex
                 const scale = 1 + Math.sin(t * 2) * 0.05;
                 vortex.scale.set(scale, scale, scale);
-                
-                const intensity = 0.3 + Math.abs(Math.sin(t * 2)) * 0.7;
-                vortexMaterial.emissiveIntensity = intensity;
-                
+
+                // Update emissive intensity based on activation and pulsation
+                 const baseIntensity = isActivated ? 0.8 : 0.5;
+                 const pulseIntensity = baseIntensity + Math.abs(Math.sin(t * 2)) * 0.2; // Add pulsation effect
+                 vortexMaterial.emissiveIntensity = pulseIntensity;
+                 ringMaterial.emissiveIntensity = pulseIntensity; // Link ring intensity too
+
+
                 ring.rotation.x += 0.005;
                 ring.rotation.y += 0.01;
                 vortex.rotation.y -= 0.002;
-                
+
                 // Teilchenbewegung
                 particles.forEach(p => {
                     const param = kerrParams[p.userData.rIndex];
                     const energyFlow = param ? param.energy_flow : 1;
-                    
+
                     p.userData.angle += p.userData.speed * energyFlow;
                     p.position.x = Math.cos(p.userData.angle) * p.userData.radius;
                     p.position.z = Math.sin(p.userData.angle) * p.userData.radius;
-                    p.position.y = p.userData.height;
+                    // Optional: Add some vertical oscillation
+                    // p.position.y = p.userData.height + Math.sin(t * 3 + p.userData.angle) * 0.2;
                 });
-                
+
                 renderer.render(scene, camera);
             }
-            
+
             animate();
-            
+
             // Resize Handler
-            function handleResize() {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            }
-            
+            const handleResize = () => {
+                 const newWidth = container.clientWidth;
+                 const newHeight = container.clientHeight;
+                 if (newWidth > 0 && newHeight > 0) {
+                     camera.aspect = newWidth / newHeight;
+                     camera.updateProjectionMatrix();
+                     renderer.setSize(newWidth, newHeight);
+                 }
+            };
             window.addEventListener('resize', handleResize);
-            
+
             // Return cleanup function
             return function cleanup() {
                 console.log("Cleaning up 5D Gateway");
-                
                 cancelAnimationFrame(animationFrameId);
                 window.removeEventListener('resize', handleResize);
-                
-                scene.remove(ring);
-                scene.remove(vortex);
+                 renderer.domElement.removeEventListener('click', handleClick);
+
+                scene.remove(ring, vortex, ambientLight, pointLight);
                 particles.forEach(p => scene.remove(p));
-                scene.remove(ambientLight);
-                scene.remove(pointLight);
-                
+
                 renderer.dispose();
-                ringGeometry.dispose();
-                ringMaterial.dispose();
-                vortexGeometry.dispose();
-                vortexMaterial.dispose();
-                particleGeometry.dispose();
-                particleMaterial.dispose();
-                
+                ringGeometry.dispose(); ringMaterial.dispose();
+                vortexGeometry.dispose(); vortexMaterial.dispose();
+                particleGeometry.dispose(); particleMaterial.dispose();
+
                 if (container.contains(renderer.domElement)) {
                     container.removeChild(renderer.domElement);
                 }
-                
-                infoBox.classList.add('hidden');
+                if (infoBox) infoBox.classList.add('hidden');
             };
         }
 
+        // Function to hide all visualizations and run cleanup
+        function hideAllVisualizations(exceptId = null) {
+            const vizContainers = {
+                'kerr3d': document.getElementById('kerr-3d-container'),
+                'fourier': document.getElementById('fourier-container'),
+                'universe-tree': document.getElementById('universe-tree-container'),
+                'gateway-5d': document.getElementById('gateway-5d-container')
+            };
+            const placeholder = document.getElementById('visualization-placeholder');
+
+            for (const id in vizContainers) {
+                if (id !== exceptId) {
+                    // Run cleanup if it exists and wasn't the active one we are keeping
+                    if (cleanupFunctions[id]) {
+                         console.log(`Cleaning up ${id}`);
+                        cleanupFunctions[id]();
+                        delete cleanupFunctions[id]; // Remove after cleanup
+                    }
+                    if (vizContainers[id]) vizContainers[id].style.display = 'none';
+                }
+            }
+
+            if (exceptId && vizContainers[exceptId]) {
+                 vizContainers[exceptId].style.display = 'block';
+                 if (placeholder) placeholder.style.display = 'none';
+             } else {
+                 if (placeholder) placeholder.style.display = 'flex'; // Show placeholder if nothing else is shown
+             }
+        }
+
+
         // DOM Manipulations
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize visualizations
-            initUniverseCanvas();
+            // Initialize static visualizations first
+            let universeCanvasCleanup = initUniverseCanvas();
             initRotationChart();
             initHawkingAnimation();
-            initCTCAnimation();
-            initVectorField();
-            const kerrSpawner = initKerrSpawner();
-            initSimInSim();
-            
-            // Initialize 3D visualization
-            const kerr3D = initKerr3D();
-            
-            // Store cleanup functions
-            const cleanupFunctions = {};
-            
+            let ctcCleanup = initCTCAnimation();
+            let vectorFieldCleanup = initVectorField();
+            let kerrSpawnerViz = initKerrSpawner(); // Store the object with spawn function
+            let simInSimCleanup = initSimInSim();
+
+             // Store initial cleanup functions
+             cleanupFunctions['universe-canvas'] = universeCanvasCleanup;
+             cleanupFunctions['ctc'] = ctcCleanup;
+             cleanupFunctions['vector-field'] = vectorFieldCleanup;
+             cleanupFunctions['kerr-spawner'] = kerrSpawnerViz.cleanup; // Store cleanup part
+             cleanupFunctions['sim-in-sim'] = simInSimCleanup;
+
+
+            // Initialize default 3D visualization (kerr3d)
+             const kerr3D = initKerr3D();
+             cleanupFunctions['kerr3d'] = kerr3D.cleanup; // Store its cleanup
+             hideAllVisualizations('kerr3d'); // Show only kerr3d initially
+
+
             // CSV Upload functionality
-            document.getElementById('upload-csv-btn').addEventListener('click', () => {
-                document.getElementById('csv-upload').click();
-            });
-            
-            document.getElementById('csv-upload').addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) {
-                    document.getElementById('status-text').textContent = 'Bitte wähle eine CSV-Datei aus!';
-                    return;
-                }
-                
-                // Check if file is CSV
-                if (!file.name.endsWith('.csv')) {
-                    document.getElementById('status-text').textContent = 'Bitte lade eine gültige CSV-Datei hoch!';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const text = e.target.result;
-                    try {
-                        // Parse CSV (expecting a column with rotation data, e.g., 1 or -1)
-                        const rows = text.split('\n').map(row => row.trim()).filter(row => row);
-                        const newRotations = rows.slice(1).map(row => {
-                            const value = parseFloat(row.split(',')[0]);
-                            return isNaN(value) ? 0 : Math.sign(value); // 1 or -1
-                        });
-                        
-                        if (newRotations.length === 0) {
-                            document.getElementById('status-text').textContent = 'Keine gültigen Rotationsdaten in der CSV-Datei gefunden!';
-                            return;
-                        }
-                        
-                        // Update rotation data
-                        rotationsData = newRotations;
-                        document.getElementById('status-text').textContent = `Erfolgreich ${newRotations.length} Rotationsdaten geladen!`;
-                        
-                        // Update chart and visualizations
-                        const rotationChart = document.getElementById('rotationChart');
-                        if (rotationChart && Chart.getChart(rotationChart)) {
-                            Chart.getChart(rotationChart).destroy();
-                        }
-                        initRotationChart();
-                        
-                        // Update Fourier Tool if it's active
-                        if (activeVisualization === 'fourier') {
-                            if (cleanupFunctions['fourier']) {
-                                cleanupFunctions['fourier']();
-                            }
-                            const fourierCleanup = initFourierTool();
-                            cleanupFunctions['fourier'] = fourierCleanup.cleanup;
-                        }
-                        
-                        // Update Universe Tree if it's active
-                        if (activeVisualization === 'universe-tree') {
-                            initUniverseTree();
-                        }
-                        
-                    } catch (error) {
-                        document.getElementById('status-text').textContent = 'Fehler beim Parsen der CSV-Datei: ' + error.message;
+            const csvUploadBtn = document.getElementById('upload-csv-btn');
+            const csvUploadInput = document.getElementById('csv-upload');
+            const statusTextEl = document.getElementById('status-text'); // Renamed for clarity
+
+            if (csvUploadBtn && csvUploadInput && statusTextEl) {
+                csvUploadBtn.addEventListener('click', () => {
+                    csvUploadInput.click();
+                });
+
+                csvUploadInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (!file) {
+                        statusTextEl.textContent = 'Bitte wähle eine CSV-Datei aus!';
+                        return;
                     }
-                };
-                
-                reader.onerror = () => {
-                    document.getElementById('status-text').textContent = 'Fehler beim Lesen der CSV-Datei!';
-                };
-                
-                reader.readAsText(file);
-            });
-            
+                    if (!file.name.endsWith('.csv')) {
+                        statusTextEl.textContent = 'Bitte lade eine gültige CSV-Datei hoch!';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const text = e.target.result;
+                        try {
+                            const rows = text.split('\n').map(row => row.trim()).filter(row => row);
+                            const newRotations = rows.slice(1).map(row => {
+                                const value = parseFloat(row.split(',')[0]);
+                                return isNaN(value) ? 0 : Math.sign(value);
+                            });
+
+                            if (newRotations.length === 0) {
+                                statusTextEl.textContent = 'Keine gültigen Rotationsdaten in der CSV-Datei gefunden!';
+                                return;
+                            }
+
+                            rotationsData = newRotations;
+                            statusTextEl.textContent = `Erfolgreich ${newRotations.length} Rotationsdaten geladen!`;
+
+                            // Re-initialize visualizations that depend on this data
+                            initRotationChart(); // Re-init chart
+
+                            if (activeVisualization === 'fourier') {
+                                hideAllVisualizations('fourier'); // Hide others
+                                cleanupFunctions['fourier'] = initFourierTool().cleanup; // Re-init and store cleanup
+                            }
+                            if (activeVisualization === 'universe-tree') {
+                                hideAllVisualizations('universe-tree'); // Hide others
+                                cleanupFunctions['universe-tree'] = initUniverseTree(); // Re-init and store cleanup
+                            }
+                            // Update Kerr Spawner if needed (or just let it use new data on next spawn)
+                             // kerrSpawnerViz = initKerrSpawner(); // Re-init spawner visualization
+                             // cleanupFunctions['kerr-spawner'] = kerrSpawnerViz.cleanup;
+
+                        } catch (error) {
+                            statusTextEl.textContent = 'Fehler beim Parsen der CSV-Datei: ' + error.message;
+                             console.error("CSV Parsing Error:", error);
+                        }
+                    };
+                    reader.onerror = () => {
+                        statusTextEl.textContent = 'Fehler beim Lesen der CSV-Datei!';
+                    };
+                    reader.readAsText(file);
+                     csvUploadInput.value = ''; // Reset input value
+                });
+            }
+
             // Dark mode toggle functionality
             const darkModeToggle = document.getElementById('darkmode-toggle');
-            darkModeToggle.addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
-                
-                // Update chart colors if rotation chart exists
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', () => {
+                    const isDarkNow = document.documentElement.classList.toggle('dark');
+                    updateVisualizationColors(isDarkNow); // Pass the current state
+                    if (statusTextEl) {
+                         statusTextEl.textContent = isDarkNow ? 'Dark mode activated' : 'Light mode activated';
+                     }
+                });
+            }
+
+            // Helper function to update visualization colors when dark mode toggles
+            function updateVisualizationColors(isDark) {
+                // Update chart colors
                 const chartCanvas = document.getElementById('rotationChart');
                 if (chartCanvas && Chart.getChart(chartCanvas)) {
                     const chart = Chart.getChart(chartCanvas);
-                    const isDark = document.documentElement.classList.contains('dark');
-                    
                     chart.options.plugins.legend.labels.color = isDark ? '#E0E0E0' : '#111111';
                     chart.update();
                 }
-                
-                // Update visualization backgrounds
-                const isDark = document.documentElement.classList.contains('dark');
-                updateVisualizationColors(isDark);
-                
-                // Update status message
-                const statusText = document.getElementById('status-text');
-                if (statusText) {
-                    statusText.textContent = isDark ? 'Dark mode activated' : 'Light mode activated';
-                }
-            });
-            
-            // Helper function to update visualization colors when dark mode toggles
-            function updateVisualizationColors(isDark) {
-                // Update universe canvas
-                const universeCanvas = document.querySelector('#universe-canvas canvas');
-                if (universeCanvas) {
-                    const ctx = universeCanvas.getContext('2d');
-                    const bgColor = isDark ? '#181818' : '#ffffff';
-                    ctx.fillStyle = bgColor;
-                    ctx.fillRect(0, 0, universeCanvas.width, universeCanvas.height);
-                }
-                
-                // Update vector field
-                const vectorField = document.querySelector('#vector-field canvas');
-                if (vectorField && vectorField.getContext) {
-                    const ctx = vectorField.getContext('2d');
-                    ctx.strokeStyle = isDark ? '#E0E0E0' : '#111111';
-                }
-                
-                // Update universe tree
-                const universeTrees = document.querySelectorAll('#universe-tree-container svg text');
-                if (universeTrees.length > 0) {
-                    universeTrees.forEach(text => {
-                        if (!text.classList.contains('tooltip-text')) {
-                            text.setAttribute('fill', isDark ? '#E0E0E0' : '#111111');
-                        }
-                    });
-                }
+
+                 // Trigger redraw/re-init for canvas elements if necessary
+                 // (Universe canvas handles this internally in its draw loop)
+                 // (Vector field needs explicit update or redraw trigger if colors are hardcoded)
+                 // (Fourier tool needs redraw trigger)
+                 // (Universe tree SVG needs text color update)
+                 document.querySelectorAll('#universe-tree-container svg text').forEach(text => {
+                     if (!text.classList.contains('tooltip-text')) { // Avoid changing tooltip text color here
+                         text.setAttribute('fill', isDark ? '#E0E0E0' : '#111111');
+                     }
+                 });
+                 // Re-trigger drawing for canvas-based visualizations if needed
+                 if (activeVisualization === 'fourier' && cleanupFunctions['fourier']) {
+                     cleanupFunctions['fourier'](); // Stop old animation
+                     cleanupFunctions['fourier'] = initFourierTool().cleanup; // Start new one
+                 }
+                  // Vector field might need similar handling if colors don't update automatically
+                  if (cleanupFunctions['vector-field']) {
+                      cleanupFunctions['vector-field']();
+                      cleanupFunctions['vector-field'] = initVectorField();
+                  }
+                  if (cleanupFunctions['kerr-spawner']) {
+                       cleanupFunctions['kerr-spawner']();
+                       kerrSpawnerViz = initKerrSpawner(); // Re-store the object
+                       cleanupFunctions['kerr-spawner'] = kerrSpawnerViz.cleanup;
+                  }
+                   if (cleanupFunctions['sim-in-sim']) {
+                       cleanupFunctions['sim-in-sim']();
+                       cleanupFunctions['sim-in-sim'] = initSimInSim();
+                   }
+                   // Universe canvas background color is handled in its own draw loop
+
+
             }
-            
-            // Function to hide all visualizations
-            function hideAllVisualizations() {
-                // Clean up any current visualization
-                if (cleanupFunctions[activeVisualization]) {
-                    cleanupFunctions[activeVisualization]();
-                    delete cleanupFunctions[activeVisualization];
-                }
-                
-                const kerr3DContainer = document.getElementById('kerr-3d-container');
-                const fourierContainer = document.getElementById('fourier-container');
-                const universeTreeContainer = document.getElementById('universe-tree-container');
-                const gateway5dContainer = document.getElementById('gateway-5d-container');
-                const visualizationPlaceholder = document.getElementById('visualization-placeholder');
-                
-                kerr3DContainer.style.display = 'none';
-                fourierContainer.style.display = 'none';
-                universeTreeContainer.style.display = 'none';
-                gateway5dContainer.style.display = 'none';
-                visualizationPlaceholder.style.display = 'flex';
-            }
-            
+
             // Tool interaction
             const spinInput = document.getElementById('spin-input');
             const spinValue = document.getElementById('spin-value');
@@ -1807,128 +1965,104 @@
             const fourierToolBtn = document.getElementById('fourier-tool-btn');
             const universeTreeBtn = document.getElementById('universe-tree-btn');
             const gateway5dBtn = document.getElementById('gateway-5d-btn');
-            const statusText = document.getElementById('status-text');
-            
-            const kerr3DContainer = document.getElementById('kerr-3d-container');
-            const fourierContainer = document.getElementById('fourier-container');
-            const universeTreeContainer = document.getElementById('universe-tree-container');
-            const gateway5dContainer = document.getElementById('gateway-5d-container');
-            const visualizationPlaceholder = document.getElementById('visualization-placeholder');
-            
+
             // Spin input
-            spinInput.addEventListener('input', function() {
-                const spin = parseFloat(this.value);
-                spinValue.textContent = spin.toFixed(1);
-                
-                if (kerr3D) {
-                    kerr3D.updateSpin(spin);
-                }
-                
-                statusText.textContent = `Spin set to ${spin.toFixed(1)}`;
-            });
-            
-            // Spawn Sub-Sim
-            spawnSimBtn.addEventListener('click', function() {
-                kerrSpawner.spawnSubSim();
-                statusText.textContent = 'Sub-simulation spawned';
-                
-                // Hide all visualizations and show 3D visualization
-                hideAllVisualizations();
-                visualizationPlaceholder.style.display = 'none';
-                kerr3DContainer.style.display = 'block';
-                
-                activeVisualization = 'kerr3d';
-            });
-            
-            // Fourier Tool
-            fourierToolBtn.addEventListener('click', function() {
-                console.log("Fourier Tool button clicked");
-                // Hide all visualizations and show Fourier visualization
-                hideAllVisualizations();
-                visualizationPlaceholder.style.display = 'none';
-                fourierContainer.style.display = 'block';
-                
-                // Initialize or reinitialize Fourier Tool
-                const fourierCleanup = initFourierTool();
-                cleanupFunctions['fourier'] = fourierCleanup.cleanup;
-                
-                activeVisualization = 'fourier';
-                statusText.textContent = 'Fourier analysis tool activated';
-            });
-            
-            // Universe Tree
-            universeTreeBtn.addEventListener('click', function() {
-                console.log("Universe Tree button clicked");
-                // Hide all visualizations and show Universe Tree
-                hideAllVisualizations();
-                visualizationPlaceholder.style.display = 'none';
-                universeTreeContainer.style.display = 'block';
-                
-                // Initialize Universe Tree
-                initUniverseTree();
-                
-                activeVisualization = 'universe-tree';
-                statusText.textContent = 'Universe tree visualization loaded';
-            });
-            
-            // 5D Gateway
-            gateway5dBtn.addEventListener('click', function() {
-                console.log("5D Gateway button clicked");
-                // Hide all visualizations and show 5D Gateway
-                hideAllVisualizations();
-                visualizationPlaceholder.style.display = 'none';
-                gateway5dContainer.style.display = 'block';
-                
-                // Initialize 5D Gateway and store cleanup function
-                const cleanup = init5DGateway();
-                cleanupFunctions['gateway-5d'] = cleanup;
-                
-                activeVisualization = 'gateway-5d';
-                statusText.textContent = '5D Gateway initialisiert. Klicke auf den blauen Vortex für Aktivierung.';
-            });
-            
+            if (spinInput && spinValue && kerr3D) {
+                spinInput.addEventListener('input', function() {
+                    const spin = parseFloat(this.value);
+                    spinValue.textContent = spin.toFixed(1);
+                    kerr3D.updateSpin(spin); // Update the 3D visualization
+                    if (statusTextEl) statusTextEl.textContent = `Spin set to ${spin.toFixed(1)}`;
+                });
+            }
+
+            // Spawn Sub-Sim Button
+            if (spawnSimBtn && kerrSpawnerViz && statusTextEl) {
+                spawnSimBtn.addEventListener('click', function() {
+                    kerrSpawnerViz.spawnSubSim(); // Use the stored object's method
+                    statusTextEl.textContent = 'Sub-simulation spawned';
+                    // Optionally switch view back to kerr3d or spawner visualization
+                    // hideAllVisualizations('kerr3d');
+                    // activeVisualization = 'kerr3d';
+                });
+            }
+
+            // Fourier Tool Button
+            if (fourierToolBtn && statusTextEl) {
+                fourierToolBtn.addEventListener('click', function() {
+                    console.log("Fourier Tool button clicked");
+                    hideAllVisualizations('fourier'); // Hide others, show fourier
+                    cleanupFunctions['fourier'] = initFourierTool().cleanup; // Init and store cleanup
+                    activeVisualization = 'fourier';
+                    statusTextEl.textContent = 'Fourier analysis tool activated';
+                });
+            }
+
+            // Universe Tree Button
+            if (universeTreeBtn && statusTextEl) {
+                universeTreeBtn.addEventListener('click', function() {
+                    console.log("Universe Tree button clicked");
+                    hideAllVisualizations('universe-tree'); // Hide others, show tree
+                    cleanupFunctions['universe-tree'] = initUniverseTree(); // Init and store cleanup
+                    activeVisualization = 'universe-tree';
+                    statusTextEl.textContent = 'Universe tree visualization loaded';
+                });
+            }
+
+            // 5D Gateway Button
+            if (gateway5dBtn && statusTextEl) {
+                gateway5dBtn.addEventListener('click', function() {
+                    console.log("5D Gateway button clicked");
+                    hideAllVisualizations('gateway-5d'); // Hide others, show gateway
+                    cleanupFunctions['gateway-5d'] = init5DGateway(); // Init and store cleanup
+                    activeVisualization = 'gateway-5d';
+                    statusTextEl.textContent = '5D Gateway initialisiert. Klicke auf den blauen Vortex für Aktivierung.';
+                });
+            }
+
             // Contact Modal
             const contactBtn = document.getElementById('contact-btn');
             const contactModal = document.getElementById('contact-modal');
             const closeModal = document.getElementById('close-modal');
             const sendMessage = document.getElementById('send-message');
-            
-            contactBtn.addEventListener('click', function() {
-                contactModal.classList.remove('hidden');
-            });
-            
-            closeModal.addEventListener('click', function() {
-                contactModal.classList.add('hidden');
-            });
-            
-            sendMessage.addEventListener('click', function() {
-                const inputs = contactModal.querySelectorAll('input, textarea');
-                let valid = true;
-                
-                inputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        valid = false;
-                        input.classList.add('border-red-500');
+
+            if (contactBtn && contactModal && closeModal && sendMessage && statusTextEl) {
+                contactBtn.addEventListener('click', function() {
+                    contactModal.classList.remove('hidden');
+                });
+                closeModal.addEventListener('click', function() {
+                    contactModal.classList.add('hidden');
+                });
+                sendMessage.addEventListener('click', function() {
+                    const inputs = contactModal.querySelectorAll('input, textarea');
+                    let valid = true;
+                    inputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            valid = false; input.classList.add('border-red-500');
+                        } else {
+                            input.classList.remove('border-red-500');
+                        }
+                    });
+                    if (valid) {
+                        statusTextEl.textContent = 'Message sent successfully!'; // Provide feedback
+                        contactModal.classList.add('hidden');
+                        inputs.forEach(input => input.value = ''); // Clear form
                     } else {
-                        input.classList.remove('border-red-500');
+                         // Optionally add feedback that fields are required
                     }
                 });
-                
-                if (valid) {
-                    statusText.textContent = 'Message sent successfully!';
-                    contactModal.classList.add('hidden');
-                    
-                    // Clear form
-                    inputs.forEach(input => input.value = '');
-                }
-            });
-            
-            // Close modal on outside click
-            window.addEventListener('click', function(event) {
-                if (event.target === contactModal) {
-                    contactModal.classList.add('hidden');
-                }
-            });
+                // Close modal on outside click
+                window.addEventListener('click', function(event) {
+                    if (event.target === contactModal) {
+                        contactModal.classList.add('hidden');
+                    }
+                });
+            }
+
+             // Initial dark mode color update
+             updateVisualizationColors(document.documentElement.classList.contains('dark'));
+
+
         });
     </script>
 </body>
